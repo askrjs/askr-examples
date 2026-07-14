@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "description": "Runnable examples for the Askr platform",
+  "license": "Apache-2.0",
   "type": "module",
   "workspaces": ["api-only", "ssr-only", "api-ssr", "spa"],
   "scripts": {
