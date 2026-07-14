@@ -1,0 +1,25 @@
+{
+  "name": "@askrjs/example-spa",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "fmt": "vp fmt .",
+    "lint": "vp lint .",
+    "test": "vp test run",
+    "typecheck": "tsc --noEmit --pretty false"
+  },
+  "dependencies": {
+    "@askrjs/askr": "file:../../askr",
+    "@askrjs/auth": "file:../../askr-auth"
+  },
+  "devDependencies": {
+    "@askrjs/vite": "file:../../askr-vite",
+    "typescript": "^6.0.0",
+    "vite": "^8.0.0",
+    "vite-plus": "^0.2.4",
+    "vitest": "^4.0.0"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "askr-examples",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Runnable examples for the Askr platform",
+  "type": "module",
+  "workspaces": ["api-only", "ssr-only", "api-ssr", "spa"],
+  "scripts": {
+    "fmt": "npm run fmt --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "check": "npm run lint && npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.0",
+    "vite-plus": "^0.2.4",
+    "vitest": "^4.0.0"
+  },
+  "engines": { "node": ">=18" }
+}

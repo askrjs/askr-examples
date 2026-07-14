@@ -1,0 +1,31 @@
+{
+  "name": "@askrjs/example-api-ssr",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev --host 127.0.0.1 --port 3002",
+    "start": "node serve.mjs",
+    "build": "vp build --configLoader native && vp build --ssr src/server/production.ts --outDir dist/server --configLoader native",
+    "preview": "vp preview --host 127.0.0.1 --port 4002",
+    "fmt": "vp fmt .",
+    "lint": "vp lint .",
+    "test": "vp test run",
+    "typecheck": "tsc --noEmit --pretty false",
+    "check": "npm run lint && npm run typecheck && npm test"
+  },
+  "dependencies": {
+    "@askrjs/askr": "file:../../askr",
+    "@askrjs/node": "file:../../askr-node",
+    "@askrjs/server": "file:../../askr-server"
+  },
+  "devDependencies": {
+    "@askrjs/vite": "file:../../askr-vite",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.0",
+    "vite": "^8.0.0",
+    "vite-plus": "^0.2.4",
+    "vitest": "^4.0.0"
+  },
+  "engines": { "node": ">=18" }
+}
