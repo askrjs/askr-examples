@@ -22,7 +22,7 @@ const preloadPolicy = ({ params, data }: { params: { id: string }; data: QueryPr
 
 export const pageRegistry = createRouteRegistry(
   () => {
-    // Keep public routes above the protected workspace group.
+    // These public routes carry forward from the SSR stage; add full-stack routes between them and the fallback.
     route('/', OverviewPage);
     route('/activity', ActivityPage);
     route('/login', LoginPage, { auth: requireAnonymous() });

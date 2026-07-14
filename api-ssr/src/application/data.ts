@@ -44,4 +44,3 @@ export const overviewStats: Array<{ label: string; value: string }> = [
   { label: 'Open incidents', value: '0' },
   { label: 'Policy coverage', value: '98%' },
 ];
-

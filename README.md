@@ -14,7 +14,7 @@ The application UI leans on `@askrjs/themes` for layout, navigation, cards, stat
 | --- | --- | --- |
 | SPA | `/`, `/activity`, `/*`; operations layout and deterministic activity | `application/*`, browser boot |
 | SSR | All SPA application modules and styles byte-for-byte | server app, Vite server entry, production entry, hydrate-or-create boot |
-| API + SSR | Public routes, vocabulary, layout, and base components | protected workspace pages, repositories, query registry, APIs, auth, server prefetch |
+| API + SSR | SSR public data, layout, pages, and styles unchanged; public routes remain in place | protected workspace pages, repositories, query registry, APIs, auth, server prefetch |
 
 Install and run all repository gates from this directory:
 

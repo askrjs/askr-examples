@@ -2,7 +2,7 @@
 
 ## What remains unchanged from the previous stage
 
-The public `/`, `/activity`, and `/*` experience remains recognizable and uses the same operations vocabulary, layout, components, styles, Vite document ownership, SSR entry, and hydrate-or-create client boot.
+The public `/`, `/activity`, and `/*` experience carries forward from `../ssr-only`: the public `data.ts`, `layout.tsx`, `pages.tsx`, and stylesheet remain unchanged. The route registry keeps those public routes in place, then adds protected routes before the same fallback. Vite document ownership, SSR entry, and hydrate-or-create client boot also remain the same.
 
 ## What this stage adds
 
@@ -31,7 +31,8 @@ Static generation is demonstrated separately in `../ssg`.
 
 ## File boundaries
 
-- `src/application/*` owns public and protected page composition.
+- `src/application/data.ts`, `layout.tsx`, and `pages.tsx` are the unchanged public SSR application; `routes.tsx` adds protected routes around those public route definitions.
+- `src/application/workspace-pages.tsx` owns the new protected workspace UI.
 - `src/domains/*` owns repository interfaces, seeds, and reusable query definitions.
 - `src/routes/api.ts` owns HTTP handlers and documented schemas.
 - `src/api.ts` composes the OpenAPI definition.

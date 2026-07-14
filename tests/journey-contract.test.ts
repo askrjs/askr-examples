@@ -28,7 +28,7 @@ describe('progressive example journey contract', () => {
     expect(await final.text()).toContain('Everything is running smoothly.');
   });
 
-  it('should carry SPA application modules into SSR without a rewrite', async () => {
+  it('should carry public application modules forward without a rewrite', async () => {
     for (const file of ['data.ts', 'layout.tsx', 'pages.tsx', 'routes.tsx']) {
       const [spa, ssr] = await Promise.all([
         readFile(new URL(`../spa/src/application/${file}`, import.meta.url), 'utf8'),
@@ -41,6 +41,16 @@ describe('progressive example journey contract', () => {
       readFile(new URL('../ssr-only/src/styles.css', import.meta.url), 'utf8'),
     ]);
     expect(ssrStyles).toBe(spaStyles);
+
+    for (const file of ['data.ts', 'layout.tsx', 'pages.tsx']) {
+      const [ssr, platform] = await Promise.all([
+        readFile(new URL(`../ssr-only/src/application/${file}`, import.meta.url), 'utf8'),
+        readFile(new URL(`../api-ssr/src/application/${file}`, import.meta.url), 'utf8'),
+      ]);
+      expect(platform).toBe(ssr);
+    }
+    const platformStyles = await readFile(new URL('../api-ssr/src/styles.css', import.meta.url), 'utf8');
+    expect(platformStyles).toBe(ssrStyles);
   });
 
   it('should render the same base SPA content through SSR before hydration', async () => {

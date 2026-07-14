@@ -4,4 +4,3 @@
 body { margin: 0; min-width: 20rem; min-height: 100vh; color: var(--ak-color-fg); background: var(--ak-color-bg); font-family: var(--ak-font-family); }
 a { color: inherit; }
 svg { width: 1em; height: 1em; }
-
