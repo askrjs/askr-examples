@@ -1,53 +1,75 @@
 openapi: 3.1.2
 info:
-  description: The documented API routes served alongside Askr SSR pages.
+  description: Authenticated APIs served alongside the Northstar operations workspace.
   license:
     identifier: Apache-2.0
     name: Apache 2.0
-  title: Askr API and SSR example
+  title: Northstar Operations API and SSR
   version: 1.0.0
 servers:
   - description: Local development
     url: http://127.0.0.1:3002
 paths:
-  /api/echo:
-    post:
-      summary: Echo a JSON message
-      operationId: createEcho
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              additionalProperties: false
-              properties:
-                message:
-                  type: string
-              required:
-                - message
-              type: object
+  /api/activity:
+    get:
+      tags:
+        - Workspace
+      summary: List workspace activity
+      operationId: listActivity
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                additionalProperties: false
-                properties:
-                  message:
-                    type: string
-                required:
-                  - message
-                type: object
-        "400":
-          description: Bad Request
+                items:
+                  $ref: "#/components/schemas/Activity"
+                type: array
+        "401":
+          description: Unauthorized
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-      security: []
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      security:
+        - cookieSession: []
+  /api/dashboard:
+    get:
+      tags:
+        - Workspace
+      summary: Get workspace dashboard data
+      operationId: getDashboard
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      security:
+        - cookieSession: []
   /api/health:
     get:
+      tags:
+        - System
       summary: Get API health
       operationId: getHealth
       responses:
@@ -60,12 +82,217 @@ paths:
                 properties:
                   ok:
                     type: boolean
+                  requestId:
+                    format: uuid
+                    type: string
                 required:
                   - ok
                 type: object
+  /api/policies/{id}:
+    get:
+      tags:
+        - Policies
+      summary: Get a policy
+      operationId: getPolicy
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Policy"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      security:
+        - cookieSession: []
+    put:
+      tags:
+        - Policies
+      summary: Update a policy
+      operationId: updatePolicy
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: If-Match
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                source:
+                  type: string
+              required:
+                - source
+              type: object
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Policy"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "428":
+          description: Precondition Required
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      security:
+        - cookieSession: []
+  /api/session:
+    get:
+      tags:
+        - Session
+      summary: Get the current demo session
+      operationId: getSession
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthContext"
+    post:
+      tags:
+        - Session
+      summary: Create the deterministic demo session
+      operationId: createSession
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  authenticated:
+                    type: boolean
+                required:
+                  - authenticated
+                type: object
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
       security: []
+    delete:
+      tags:
+        - Session
+      summary: Delete the current demo session
+      operationId: deleteSession
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      security:
+        - cookieSession: []
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: List users
+      operationId: listUsers
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/User"
+                type: array
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      security:
+        - cookieSession: []
   /api/users/{id}:
     get:
+      tags:
+        - Users
       summary: Get a user
       operationId: getUser
       parameters:
@@ -81,15 +308,220 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "404":
           description: Not Found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-      security: []
+      security:
+        - cookieSession: []
+    patch:
+      tags:
+        - Users
+      summary: Update a user
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: If-Match
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                email:
+                  format: email
+                  type: string
+                name:
+                  minLength: 2
+                  type: string
+                role:
+                  enum:
+                    - operator
+                    - viewer
+              type: object
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "428":
+          description: Precondition Required
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      security:
+        - cookieSession: []
 components:
   schemas:
+    Activity:
+      additionalProperties: false
+      properties:
+        detail:
+          type: string
+        id:
+          type: string
+        kind:
+          enum:
+            - deployment
+            - access
+            - policy
+        time:
+          type: string
+        title:
+          type: string
+      required:
+        - id
+        - kind
+        - title
+        - detail
+        - time
+      type: object
+    AuthContext:
+      additionalProperties: false
+      properties:
+        authenticated:
+          type: boolean
+        principal:
+          anyOf:
+            - $ref: "#/components/schemas/Principal"
+            - type: "null"
+        session:
+          anyOf:
+            - $ref: "#/components/schemas/Session"
+            - type: "null"
+        tenant:
+          anyOf:
+            - type: string
+            - type: "null"
+      required:
+        - authenticated
+        - principal
+        - session
+        - tenant
+      type: object
+    Dashboard:
+      additionalProperties: false
+      properties:
+        activeUsers:
+          type: integer
+        healthyServices:
+          type: integer
+        openIncidents:
+          type: integer
+        trend:
+          items:
+            additionalProperties: false
+            properties:
+              label:
+                type: string
+              value:
+                type: number
+            required:
+              - label
+              - value
+            type: object
+          type: array
+      required:
+        - healthyServices
+        - openIncidents
+        - activeUsers
+        - trend
+      type: object
+    Policy:
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        language:
+          const: json
+        name:
+          type: string
+        source:
+          type: string
+        version:
+          minimum: 1
+          type: integer
+      required:
+        - id
+        - name
+        - language
+        - source
+        - version
+      type: object
+    Principal:
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        permissions:
+          items:
+            type: string
+          type: array
+        roles:
+          items:
+            type: string
+          type: array
+        subject:
+          type: string
+      required:
+        - id
+      type: object
     Problem:
       additionalProperties: true
       description: A problem detail response defined by RFC 9457.
@@ -113,16 +545,44 @@ components:
         - title
         - status
       type: object
-    User:
+    Session:
       additionalProperties: false
       properties:
         id:
-          description: User identifier
           type: string
-        name:
-          description: Display name
+        subject:
           type: string
       required:
         - id
-        - name
+        - subject
       type: object
+    User:
+      additionalProperties: false
+      properties:
+        email:
+          format: email
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        role:
+          enum:
+            - operator
+            - viewer
+        version:
+          minimum: 1
+          type: integer
+      required:
+        - id
+        - name
+        - email
+        - role
+        - version
+      type: object
+  securitySchemes:
+    cookieSession:
+      description: Deterministic local demo session
+      in: cookie
+      name: northstar-session
+      type: apiKey

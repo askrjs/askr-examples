@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vp dev",
     "build": "vp build",
+    "preview": "vp preview --host 127.0.0.1 --port 4000",
     "fmt": "vp fmt .",
     "lint": "vp lint .",
     "test": "vp test run",
@@ -13,7 +14,10 @@
   },
   "dependencies": {
     "@askrjs/askr": "file:../../askr",
-    "@askrjs/auth": "file:../../askr-auth"
+    "@askrjs/auth": "file:../../askr-auth",
+    "@askrjs/lucide": "file:../../askr-lucide",
+    "@askrjs/themes": "file:../../askr-themes",
+    "@askrjs/ui": "file:../../askr-ui"
   },
   "devDependencies": {
     "@askrjs/vite": "file:../../askr-vite",

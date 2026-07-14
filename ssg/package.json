@@ -1,0 +1,32 @@
+{
+  "name": "@askrjs/example-ssg",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev --host 127.0.0.1 --port 3003",
+    "start": "node serve.mjs",
+    "generate": "tsx ssg-build.ts",
+    "build": "npm run generate && vp build --configLoader native",
+    "fmt": "vp fmt .",
+    "lint": "vp lint .",
+    "test": "vp test run",
+    "typecheck": "tsc --noEmit --pretty false",
+    "check": "npm run lint && npm run typecheck && npm test"
+  },
+  "dependencies": {
+    "@askrjs/askr": "file:../../askr",
+    "@askrjs/lucide": "file:../../askr-lucide",
+    "@askrjs/themes": "file:../../askr-themes",
+    "@askrjs/ui": "file:../../askr-ui"
+  },
+  "devDependencies": {
+    "@askrjs/vite": "file:../../askr-vite",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.0",
+    "vite": "^8.0.0",
+    "vite-plus": "^0.2.4",
+    "vitest": "^4.0.0"
+  },
+  "engines": { "node": ">=18" }
+}

@@ -1,46 +1,37 @@
 # Askr examples
 
-Small, runnable examples for the Askr server platform.
+These independently runnable applications form one progressive Northstar operations workspace. Start with the client-rendered app, add SSR without rewriting it, then add the authenticated API and data platform.
 
-The examples are intentionally staged:
+## Primary journey
 
-1. `api-only` — a Fetch-based API app developed with Vite and served with the Node adapter.
-2. `ssr-only` — an Askr page app rendered on the server and hydrated in the browser.
-3. `api-ssr` — API routes and page SSR composed in one app.
+1. [`spa/`](spa/) teaches routes, layouts, links, state, derived values, `For`/`Show`, icons, and theme components using deterministic local data.
+2. [`ssr-only/`](ssr-only/) carries those application files forward and adds server rendering, a Vite server entry, Node serving, document composition, and hydration.
+3. [`api-ssr/`](api-ssr/) keeps the public app recognizable and adds login, protected nested workspace routes, authenticated APIs, queries, mutations, SSR prefetch, charts, dialogs, and Monaco policy editing.
 
-Each example keeps application assembly in `src/app.ts` and surfaces concrete
-dependencies from an outer server entry under `src/server/`.
+The application UI leans on `@askrjs/themes` for layout, navigation, cards, stats, forms, empty states, and persisted color mode. The small example stylesheets contain only global defaults and feature-specific sizing.
 
-## API-only
+| Stage | Routes and application UI carried forward | Files added at this stage |
+| --- | --- | --- |
+| SPA | `/`, `/activity`, `/*`; operations layout and deterministic activity | `application/*`, browser boot |
+| SSR | All SPA application modules and styles byte-for-byte | server app, Vite server entry, production entry, hydrate-or-create boot |
+| API + SSR | Public routes, vocabulary, layout, and base components | protected workspace pages, repositories, query registry, APIs, auth, server prefetch |
 
-The app is in [`api-only/`](api-only/). It uses one `createServerApp()` call, a request middleware, and ordinary method-aware routes. Vite development uses `@askrjs/vite`; the Node entry uses `@askrjs/node` for a production-style runtime.
-
-Run it from the example directory:
+Install and run all repository gates from this directory:
 
 ```sh
-cd api-only
 npm install
-npm run dev
+npm run check
+npm run build
+npm run test:browser
 ```
 
-Then try:
+## Supplemental references
 
-```sh
-curl http://127.0.0.1:3000/api/health
-curl http://127.0.0.1:3000/api/greetings/Askr
-curl -X POST http://127.0.0.1:3000/api/echo \
-  -H 'content-type: application/json' \
-  -d '{"hello":"world"}'
-```
+- [`api-only/`](api-only/) is the small server reference. Its health and user API patterns are reused directly by `api-ssr`.
+- [`ssg/`](ssg/) generates public runbook pages, expands parameterized entries, emits metadata, and hydrates a small interactive control.
 
-The package dependencies point at the sibling platform packages while they are developed together. Once those packages are published, this example can switch to versioned dependencies without changing the app code.
+Every workspace can also be copied, installed, tested, and run from its own directory. Local `file:` dependencies point at sibling platform packages during platform development.
 
-Run `cd api-only && npm run dev` or `cd ssr-only && npm run dev` to start an individual example.
+## Platform boundary
 
-## SSR-only
-
-`ssr-only` adds a shared Askr page route table and browser hydration. The app renders the page fragment; the normal Vite `index.html` owns the document shell.
-
-## API + SSR
-
-`api-ssr` combines both surfaces in one `createServerApp()`: API routes resolve first, while unmatched page requests render the shared Askr route table. Unknown `/api/*` requests remain API 404s.
+WebSockets are intentionally deferred. `@askrjs/node` does not currently expose an HTTP upgrade adapter, so these examples do not advertise a route that cannot work in the production adapter. A future WebSocket example belongs at that adapter boundary.

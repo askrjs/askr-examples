@@ -1,64 +1,55 @@
-# API + SSR
+# Authenticated API and SSR workspace
 
-This example combines the API-only and SSR-only patterns in one cohesive app.
+## What remains unchanged from the previous stage
 
-- `src/api.ts` owns the documented API definition and OpenAPI metadata.
-- `src/app.ts` injects dependencies, materializes those routes, and appends the
-  deliberately undocumented `/api/*` fallback before creating one server app.
-- `src/routes/api.ts` registers API handlers through the fluent definition.
-- `src/routes/pages.tsx` defines Askr pages for SSR and hydration.
-- `src/client.tsx` hydrates the same page route table in the browser.
-- `src/server/entry-server.ts` is the outer composition root used by Vite SSR.
-- `src/server.ts` runs the composed app through `@askrjs/node`.
-- `index.html` and the Vite config provide the normal Vite client/SSR build surface.
+The public `/`, `/activity`, and `/*` experience remains recognizable and uses the same operations vocabulary, layout, components, styles, Vite document ownership, SSR entry, and hydrate-or-create client boot.
 
-## Development
+## What this stage adds
+
+- `/login` and protected nested routes under `/workspace` for dashboards, users, and policy editing.
+- Deterministic cookie sessions through `@askrjs/auth`, permission checks, and explicit 401/403 Problem Details.
+- Fresh in-memory repositories behind dependency interfaces and `createDependencies()`.
+- Queries, mutations, invalidation, server prefetch, dehydrated state, and browser cache adoption.
+- Theme-based accessible controls, charts, dialogs, and Monaco policy editing.
+- Documented APIs, middleware, probes, logging, security headers, and the production Node adapter.
+
+## Commands
 
 ```sh
 npm install
-npm run dev
+npm run dev             # Vite development with API and SSR
+npm run build           # client and production server builds
+npm start               # run the built Node application
+npm test                # request, auth, query, mutation, and SSR tests
+npm run openapi         # regenerate openapi.yml
+npm run openapi:check   # byte-for-byte OpenAPI drift gate
+npm run typecheck       # strict TypeScript
+npm run lint            # source lint
 ```
 
-An endpoint definition keeps runtime and documentation together:
+Static generation is demonstrated separately in `../ssg`.
 
-```ts
-api.get('/api/users/{id}', async (ctx, { users }) => {
-  const user = await users.find(ctx.params.id);
-  return user ? ctx.ok(user) : ctx.notFound('User not found');
-})
-  .operationId('getUser')
-  .summary('Get a user')
-  .pathParam('id', schema.string())
-  .ok(User)
-  .notFound();
-```
+## File boundaries
 
-Regenerate the checked-in contract after API changes and reject drift in CI:
+- `src/application/*` owns public and protected page composition.
+- `src/domains/*` owns repository interfaces, seeds, and reusable query definitions.
+- `src/routes/api.ts` owns HTTP handlers and documented schemas.
+- `src/api.ts` composes the OpenAPI definition.
+- `src/boot/*` composes dependencies and query handlers.
+- `src/app.ts` composes auth, middleware, API fallback, probes, and page SSR.
+- `src/server/*` and `serve.mjs` are the Vite and Node hosting boundaries.
+
+## Try it
+
+Create a session, retain its cookie, and exercise both surfaces:
 
 ```sh
-npm run openapi
-npm run openapi:check
-```
-
-The wildcard API fallback stays on the generic router and is intentionally
-absent from `openapi.yml`. It is appended after the documented routes, so those
-routes still take precedence and unknown API paths never reach the page fallback.
-Schemas do not replace the existing explicit `ctx.bind()` calls.
-
-Try both surfaces:
-
-```sh
-curl http://127.0.0.1:3002/
+curl -i -X POST http://127.0.0.1:3002/api/session
 curl http://127.0.0.1:3002/api/health
-curl http://127.0.0.1:3002/api/users/1
+curl -H 'cookie: northstar-session=northstar-demo-session' http://127.0.0.1:3002/api/dashboard
+curl -H 'cookie: northstar-session=northstar-demo-session' http://127.0.0.1:3002/workspace
 ```
 
-Build and preview with the ordinary Vite client and SSR builds:
+In the browser, use Demo login, open a user dialog and save a change, toggle the persisted theme, then load and save the `support-escalation` policy in Monaco. Unknown `/api/*` paths remain API Problem responses and never fall into page SSR.
 
-```sh
-npm run build
-npm run preview
-```
-
-`npm run preview` serves the built client artifact. Use `npm start` to exercise
-the request-time Node API + SSR runtime.
+OpenAPI schemas document the contract; handlers still validate required bound values explicitly. Editable values come from the body, route and query values retain bind precedence, and `If-Match` is read explicitly from `ctx.headers`.

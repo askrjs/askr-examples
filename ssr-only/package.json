@@ -16,8 +16,11 @@
   },
   "dependencies": {
     "@askrjs/askr": "file:../../askr",
+    "@askrjs/lucide": "file:../../askr-lucide",
     "@askrjs/node": "file:../../askr-node",
-    "@askrjs/server": "file:../../askr-server"
+    "@askrjs/server": "file:../../askr-server",
+    "@askrjs/themes": "file:../../askr-themes",
+    "@askrjs/ui": "file:../../askr-ui"
   },
   "devDependencies": {
     "@askrjs/vite": "file:../../askr-vite",

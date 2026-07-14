@@ -1,77 +1,19 @@
 openapi: 3.1.2
 info:
-  description: The HTTP contract for the API-only Askr example.
+  description: The basic API contract reused by the full API and SSR example.
   license:
     identifier: Apache-2.0
     name: Apache 2.0
-  title: Askr API-only example
+  title: Northstar Operations API
   version: 1.0.0
 servers:
   - description: Local development
     url: http://127.0.0.1:3000
 paths:
-  /api/echo:
-    post:
-      summary: Echo a JSON greeting
-      operationId: createEcho
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              additionalProperties: false
-              properties:
-                hello:
-                  type: string
-              required:
-                - hello
-              type: object
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                additionalProperties: false
-                properties:
-                  hello:
-                    type: string
-                required:
-                  - hello
-                type: object
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-      security: []
-  /api/greetings/{name}:
-    get:
-      summary: Get a personalized greeting
-      operationId: getGreeting
-      parameters:
-        - name: name
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                additionalProperties: false
-                properties:
-                  message:
-                    type: string
-                required:
-                  - message
-                type: object
-      security: []
   /api/health:
     get:
+      tags:
+        - System
       summary: Get API health
       operationId: getHealth
       responses:
@@ -90,9 +32,25 @@ paths:
                 required:
                   - ok
                 type: object
-      security: []
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: List users
+      operationId: listUsers
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/User"
+                type: array
   /api/users/{id}:
     get:
+      tags:
+        - Users
       summary: Get a user
       operationId: getUser
       parameters:
@@ -104,6 +62,11 @@ paths:
       responses:
         "200":
           description: OK
+          headers:
+            ETag:
+              description: Current user version
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -114,7 +77,72 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-      security: []
+    patch:
+      tags:
+        - Users
+      summary: Update a user
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: If-Match
+          in: header
+          description: Quoted user version
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                email:
+                  format: email
+                  type: string
+                name:
+                  minLength: 2
+                  type: string
+                role:
+                  enum:
+                    - operator
+                    - viewer
+              type: object
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "428":
+          description: Precondition Required
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
 components:
   schemas:
     Problem:
@@ -143,13 +171,26 @@ components:
     User:
       additionalProperties: false
       properties:
+        email:
+          format: email
+          type: string
         id:
           description: User identifier
           type: string
         name:
           description: Display name
           type: string
+        role:
+          enum:
+            - operator
+            - viewer
+        version:
+          minimum: 1
+          type: integer
       required:
         - id
         - name
+        - email
+        - role
+        - version
       type: object

@@ -5,7 +5,7 @@
   "description": "Runnable examples for the Askr platform",
   "license": "Apache-2.0",
   "type": "module",
-  "workspaces": ["api-only", "ssr-only", "api-ssr", "spa"],
+  "workspaces": ["spa", "ssr-only", "api-ssr", "api-only", "ssg"],
   "scripts": {
     "fmt": "npm run fmt --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
@@ -14,10 +14,16 @@
     "build": "npm run build --workspaces --if-present",
     "openapi": "npm run openapi --workspaces --if-present",
     "openapi:check": "npm run openapi:check --workspaces --if-present",
-    "check": "npm run lint && npm run typecheck && npm test && npm run openapi:check"
+    "test:journey": "vp test run -c vitest.config.ts",
+    "test:browser": "playwright test",
+    "check": "npm run lint && npm run typecheck && npm test && npm run test:journey && npm run openapi:check",
+    "acceptance": "npm run check && npm run build && npm run test:browser"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
+    "@playwright/test": "^1.61.1",
+    "jsdom": "^29.1.1",
+    "playwright": "^1.61.1",
     "tsx": "^4.23.0",
     "typescript": "^6.0.0",
     "vite-plus": "^0.2.4",

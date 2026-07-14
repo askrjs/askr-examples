@@ -19,8 +19,14 @@
   "dependencies": {
     "@askrjs/auth": "file:../../askr-auth",
     "@askrjs/askr": "file:../../askr",
+    "@askrjs/charts": "file:../../askr-charts",
+    "@askrjs/lucide": "file:../../askr-lucide",
+    "@askrjs/monaco": "file:../../askr-monaco",
     "@askrjs/node": "file:../../askr-node",
-    "@askrjs/server": "file:../../askr-server"
+    "@askrjs/server": "file:../../askr-server",
+    "@askrjs/themes": "file:../../askr-themes",
+    "@askrjs/ui": "file:../../askr-ui",
+    "monaco-editor": "^0.55.1"
   },
   "devDependencies": {
     "@askrjs/cli": "file:../../askr-cli",
