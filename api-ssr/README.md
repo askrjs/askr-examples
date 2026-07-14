@@ -2,8 +2,10 @@
 
 This example combines the API-only and SSR-only patterns in one cohesive app.
 
-- `src/app.ts` creates one router and one `@askrjs/server` app from injected dependencies.
-- `src/routes/api.ts` registers API endpoints on that router.
+- `src/api.ts` owns the documented API definition and OpenAPI metadata.
+- `src/app.ts` injects dependencies, materializes those routes, and appends the
+  deliberately undocumented `/api/*` fallback before creating one server app.
+- `src/routes/api.ts` registers API handlers through the fluent definition.
 - `src/routes/pages.tsx` defines Askr pages for SSR and hydration.
 - `src/client.tsx` hydrates the same page route table in the browser.
 - `src/server/entry-server.ts` is the outer composition root used by Vite SSR.
@@ -16,6 +18,32 @@ This example combines the API-only and SSR-only patterns in one cohesive app.
 npm install
 npm run dev
 ```
+
+An endpoint definition keeps runtime and documentation together:
+
+```ts
+api.get('/api/users/{id}', async (ctx, { users }) => {
+  const user = await users.find(ctx.params.id);
+  return user ? ctx.ok(user) : ctx.notFound('User not found');
+})
+  .operationId('getUser')
+  .summary('Get a user')
+  .pathParam('id', schema.string())
+  .ok(User)
+  .notFound();
+```
+
+Regenerate the checked-in contract after API changes and reject drift in CI:
+
+```sh
+npm run openapi
+npm run openapi:check
+```
+
+The wildcard API fallback stays on the generic router and is intentionally
+absent from `openapi.yml`. It is appended after the documented routes, so those
+routes still take precedence and unknown API paths never reach the page fallback.
+Schemas do not replace the existing explicit `ctx.bind()` calls.
 
 Try both surfaces:
 

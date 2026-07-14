@@ -1,0 +1,128 @@
+openapi: 3.1.2
+info:
+  description: The documented API routes served alongside Askr SSR pages.
+  license:
+    identifier: Apache-2.0
+    name: Apache 2.0
+  title: Askr API and SSR example
+  version: 1.0.0
+servers:
+  - description: Local development
+    url: http://127.0.0.1:3002
+paths:
+  /api/echo:
+    post:
+      summary: Echo a JSON message
+      operationId: createEcho
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                message:
+                  type: string
+              required:
+                - message
+              type: object
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                type: object
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      security: []
+  /api/health:
+    get:
+      summary: Get API health
+      operationId: getHealth
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                  - ok
+                type: object
+      security: []
+  /api/users/{id}:
+    get:
+      summary: Get a user
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      security: []
+components:
+  schemas:
+    Problem:
+      additionalProperties: true
+      description: A problem detail response defined by RFC 9457.
+      properties:
+        detail:
+          type: string
+        instance:
+          format: uri-reference
+          type: string
+        status:
+          maximum: 599
+          minimum: 100
+          type: integer
+        title:
+          type: string
+        type:
+          format: uri-reference
+          type: string
+      required:
+        - type
+        - title
+        - status
+      type: object
+    User:
+      additionalProperties: false
+      properties:
+        id:
+          description: User identifier
+          type: string
+        name:
+          description: Display name
+          type: string
+      required:
+        - id
+        - name
+      type: object

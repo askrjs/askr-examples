@@ -12,14 +12,18 @@
     "lint": "vp lint .",
     "test": "vp test run",
     "typecheck": "tsc --noEmit --pretty false",
-    "check": "npm run lint && npm run typecheck && npm test"
+    "openapi": "askr openapi",
+    "openapi:check": "askr openapi --check",
+    "check": "npm run lint && npm run typecheck && npm test && npm run openapi:check"
   },
   "dependencies": {
+    "@askrjs/auth": "file:../../askr-auth",
     "@askrjs/askr": "file:../../askr",
     "@askrjs/node": "file:../../askr-node",
     "@askrjs/server": "file:../../askr-server"
   },
   "devDependencies": {
+    "@askrjs/cli": "file:../../askr-cli",
     "@askrjs/vite": "file:../../askr-vite",
     "tsx": "^4.23.0",
     "typescript": "^6.0.0",

@@ -2,32 +2,41 @@
 
 This example is a complete API application built with `@askrjs/server`.
 
-- `src/app.ts` defines the router, wires dependencies, and turns it into a Fetch app.
+- `src/api.ts` defines documented routes and their OpenAPI contract.
+- `src/app.ts` injects dependencies, materializes the router, and turns it into a Fetch app.
 - `src/server.ts` starts the Node process.
 - `vite.config.ts` runs it in Vite development through `@askrjs/vite`.
 - `src/server.ts` runs the same app through `@askrjs/node`.
 - `src/routes/` contains the HTTP route surface, while `src/domains/` contains domain contracts and implementations.
 - `src/routes/index.ts` composes all route modules.
 
-The route DSL includes the standard HTTP verbs: `get`, `head`, `post`, `put`, `patch`, `delete`, `options`, `trace`, and `connect`.
+The strict OpenAPI DSL includes the documented HTTP verbs and requires an
+operation ID, summary, and at least one response for every route.
 
 Handlers use context-bound response helpers such as `ctx.ok()`, `ctx.created()`, `ctx.badRequest()`, `ctx.notFound()`, `ctx.noContent()`, and `ctx.internalServerError()`.
 
 All error helpers return RFC Problem Details responses with `type`, `title`, `status`, and optional `detail` fields.
 
-Dependencies are created in `src/boot/dependencies.ts` and passed directly to domain route registration functions. Route handlers do not look up services from `ctx`.
+Dependencies are created in `src/boot/dependencies.ts` and passed to
+`api.createRouter(deps)`. Each handler receives that same object as its second
+argument; route handlers do not look up services from `ctx`.
 
 `src/app.ts` exposes `createApp(deps)` for isolated tests and alternate configurations, while also exporting a default configured `app` for the runtime entrypoints.
 
 The route definitions stay close to the shape of the HTTP API:
 
 ```ts
-const router = createRouter();
-router.use(requestId);
-router.get('/api/health', health);
-router.post('/api/echo', echo);
+const users = api.group('/api/users').tags('Users');
 
-const app = createServerApp(router);
+users.get('/{id}', async (ctx, { users }) => {
+  const user = await users.find(ctx.params.id);
+  return user ? ctx.ok(user) : ctx.notFound('User not found');
+})
+  .operationId('getUser')
+  .summary('Get a user')
+  .pathParam('id', schema.string())
+  .ok(User)
+  .notFound();
 ```
 
 ## Development
@@ -36,6 +45,17 @@ const app = createServerApp(router);
 npm install
 npm run dev
 ```
+
+Generate the checked-in `openapi.yml` after changing the API definition, and
+use the byte-for-byte check in CI:
+
+```sh
+npm run openapi
+npm run openapi:check
+```
+
+The schema metadata documents the existing contract; it does not validate
+requests. Handlers continue to call `ctx.bind()` explicitly.
 
 ## Node runtime
 

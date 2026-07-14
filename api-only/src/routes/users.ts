@@ -1,12 +1,13 @@
-import type { Router } from '@askrjs/server/router';
-import type { UserRepository } from '../domains/users/repository.js';
+import { schema, type ApiDefinition, type Schema } from '@askrjs/server/openapi';
+import type { AppDependencies } from '../boot/dependencies.js';
 
 export function registerUserRoutes(
-  router: Router,
-  deps: { users: UserRepository },
+  api: ApiDefinition<AppDependencies>,
+  User: Schema,
 ): void {
-  router.get('/api/users/{id}', async (ctx) => {
-    const user = await deps.users.find(ctx.params.id);
+  api.get('/api/users/{id}', async (ctx, { users }) => {
+    const user = await users.find(ctx.params.id);
     return user ? ctx.ok(user) : ctx.notFound('User not found');
-  });
+  }).operationId('getUser').summary('Get a user')
+    .pathParam('id', schema.string()).ok(User).notFound();
 }

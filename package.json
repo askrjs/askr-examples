@@ -12,7 +12,9 @@
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
-    "check": "npm run lint && npm run typecheck && npm test"
+    "openapi": "npm run openapi --workspaces --if-present",
+    "openapi:check": "npm run openapi:check --workspaces --if-present",
+    "check": "npm run lint && npm run typecheck && npm test && npm run openapi:check"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",

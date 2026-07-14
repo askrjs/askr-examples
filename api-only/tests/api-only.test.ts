@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import app from '../src/server/entry.js';
+import api from '../src/api.js';
 
 describe('api-only example', () => {
   it('serves health and request-scoped middleware state', async () => {
@@ -29,5 +30,14 @@ describe('api-only example', () => {
 
     const missing = await app.fetch(new Request('http://example.test/api/users/404'));
     expect(missing.status).toBe(404);
+  });
+
+  it('exposes the same routes in its OpenAPI document', () => {
+    const document = api.toOpenApiDocument() as Record<string, unknown>;
+    expect(document.openapi).toBe('3.1.2');
+    expect(document.paths).toMatchObject({
+      '/api/health': { get: { operationId: 'getHealth' } },
+      '/api/users/{id}': { get: { operationId: 'getUser' } },
+    });
   });
 });
