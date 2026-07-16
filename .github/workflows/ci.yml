@@ -1,0 +1,150 @@
+name: System Integration
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    name: Askr Journey Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout examples
+        uses: actions/checkout@v7
+        with:
+          path: askr-examples
+      - name: Checkout runtime
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr
+          path: askr
+      - name: Checkout auth
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-auth
+          path: askr-auth
+      - name: Checkout charts
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-charts
+          path: askr-charts
+      - name: Checkout CLI
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-cli
+          path: askr-cli
+      - name: Checkout i18n
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-i18n
+          path: askr-i18n
+      - name: Checkout logos
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-logos
+          path: askr-logos
+      - name: Checkout Lucide wrappers
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-lucide
+          path: askr-lucide
+      - name: Checkout Monaco wrapper
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-monaco
+          path: askr-monaco
+      - name: Checkout Node adapter
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-node
+          path: askr-node
+      - name: Checkout telemetry
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-otel
+          path: askr-otel
+      - name: Checkout schema
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-schema
+          path: askr-schema
+      - name: Checkout server
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-server
+          path: askr-server
+      - name: Checkout themes
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-themes
+          path: askr-themes
+      - name: Checkout UI
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-ui
+          path: askr-ui
+      - name: Checkout Vite integration
+        uses: actions/checkout@v7
+        with:
+          repository: askrjs/askr-vite
+          path: askr-vite
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: npm
+          cache-dependency-path: askr-examples/package-lock.json
+
+      - name: Build foundation packages
+        run: |
+          npm ci --prefix askr-auth
+          npm run build --prefix askr-auth
+          npm ci --prefix askr-schema
+          npm run build --prefix askr-schema
+          npm ci --prefix askr
+          npm run build --prefix askr
+          npm ci --prefix askr-server
+          npm run build --prefix askr-server
+          npm ci --prefix askr-node
+          npm run build --prefix askr-node
+
+      - name: Build feature packages
+        run: |
+          npm ci --prefix askr-ui
+          npm run build --prefix askr-ui
+          npm ci --prefix askr-themes
+          npm run build --prefix askr-themes
+          npm ci --prefix askr-charts
+          npm run build --prefix askr-charts
+          npm ci --prefix askr-logos
+          npm run build --prefix askr-logos
+          npm ci --prefix askr-lucide
+          npm run build --prefix askr-lucide
+          npm ci --prefix askr-monaco
+          npm run build --prefix askr-monaco
+          npm ci --prefix askr-i18n
+          npm run build --prefix askr-i18n
+          npm ci --prefix askr-otel
+          npm run build --prefix askr-otel
+
+      - name: Build tooling packages
+        run: |
+          npm ci --prefix askr-vite
+          npm run build --prefix askr-vite
+          npm ci --prefix askr-cli
+          npm run build --prefix askr-cli
+
+      - name: Install examples and Chromium
+        run: |
+          npm ci --prefix askr-examples
+          npm --prefix askr-examples exec playwright install --with-deps chromium
+
+      - name: Run carried-forward journeys
+        run: npm run acceptance --prefix askr-examples

@@ -1,4 +1,5 @@
-import { createApi, schema } from '@askrjs/server/openapi';
+import { schema } from '@askrjs/schema';
+import { createApi } from '@askrjs/server/openapi';
 import type { AppDependencies } from './boot/dependencies.js';
 import { registerRoutes } from './routes/index.js';
 

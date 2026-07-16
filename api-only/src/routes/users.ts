@@ -1,6 +1,15 @@
-import { schema, type ApiDefinition, type Schema } from '@askrjs/server/openapi';
+import { schema, type Schema } from '@askrjs/schema';
+import type { ApiDefinition } from '@askrjs/server/openapi';
 import type { AppDependencies } from '../boot/dependencies.js';
 import type { UserUpdate } from '../domains/users/repository.js';
+
+const Problem = schema.object({
+  type: schema.string(),
+  title: schema.string(),
+  status: schema.integer({ minimum: 100, maximum: 599 }),
+  detail: schema.optional(schema.string()),
+  instance: schema.optional(schema.string()),
+}, { additionalProperties: true });
 
 function parseVersion(value: string | null): number | null {
   if (!value) return null;
@@ -67,5 +76,5 @@ export function registerUserRoutes(
       role: schema.optional(schema.enum(['operator', 'viewer'])),
     }), { required: true })
     .ok(User).badRequest().notFound().conflict()
-    .response(428, schema.ref('Problem'), { mediaType: 'application/problem+json', description: 'Precondition Required' });
+    .response(428, Problem, { mediaType: 'application/problem+json', description: 'Precondition Required' });
 }

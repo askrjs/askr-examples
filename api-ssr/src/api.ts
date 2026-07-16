@@ -1,4 +1,5 @@
-import { createApi, schema, security } from '@askrjs/server/openapi';
+import { schema } from '@askrjs/schema';
+import { createApi, security } from '@askrjs/server/openapi';
 import type { AppDependencies } from './boot/dependencies.js';
 import { SESSION_COOKIE } from './domains/sessions/repository.js';
 import { registerApiRoutes } from './routes/api.js';

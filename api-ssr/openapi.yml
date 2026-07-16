@@ -138,8 +138,9 @@ paths:
           required: true
           schema:
             type: string
-        - name: If-Match
+        - name: if-match
           in: header
+          description: Quoted policy version
           required: true
           schema:
             type: string
@@ -151,6 +152,7 @@ paths:
               additionalProperties: false
               properties:
                 source:
+                  minLength: 1
                   type: string
               required:
                 - source
@@ -197,7 +199,25 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                additionalProperties: true
+                properties:
+                  detail:
+                    type: string
+                  instance:
+                    type: string
+                  status:
+                    maximum: 599
+                    minimum: 100
+                    type: integer
+                  title:
+                    type: string
+                  type:
+                    type: string
+                required:
+                  - type
+                  - title
+                  - status
+                type: object
       security:
         - cookieSession: []
   /api/session:
@@ -218,6 +238,11 @@ paths:
         - Session
       summary: Create the deterministic demo session
       operationId: createSession
+      parameters:
+        - name: next
+          in: query
+          schema:
+            type: string
       responses:
         "201":
           description: Created
@@ -231,6 +256,8 @@ paths:
                 required:
                   - authenticated
                 type: object
+        "303":
+          description: See Other
         "403":
           description: Forbidden
           content:
@@ -339,8 +366,9 @@ paths:
           required: true
           schema:
             type: string
-        - name: If-Match
+        - name: if-match
           in: header
+          description: Quoted user version
           required: true
           schema:
             type: string
@@ -404,7 +432,25 @@ paths:
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                additionalProperties: true
+                properties:
+                  detail:
+                    type: string
+                  instance:
+                    type: string
+                  status:
+                    maximum: 599
+                    minimum: 100
+                    type: integer
+                  title:
+                    type: string
+                  type:
+                    type: string
+                required:
+                  - type
+                  - title
+                  - status
+                type: object
       security:
         - cookieSession: []
 components:

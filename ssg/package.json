@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vp dev --host 127.0.0.1 --port 3003",
     "start": "node serve.mjs",
-    "generate": "tsx ssg-build.ts",
-    "build": "npm run generate && vp build --configLoader native",
+    "build": "npm run build:client && npm run generate",
+    "build:client": "vp build --configLoader native",
+    "generate": "askr ssg --config ./ssg.config.ts --output ./dist/static",
+    "generate:incremental": "npm run generate -- --incremental",
     "fmt": "vp fmt .",
     "lint": "vp lint .",
     "test": "vp test run",
@@ -21,12 +23,12 @@
     "@askrjs/ui": "file:../../askr-ui"
   },
   "devDependencies": {
+    "@askrjs/cli": "file:../../askr-cli",
     "@askrjs/vite": "file:../../askr-vite",
-    "tsx": "^4.23.0",
     "typescript": "^6.0.0",
     "vite": "^8.0.0",
     "vite-plus": "^0.2.4",
     "vitest": "^4.0.0"
   },
-  "engines": { "node": ">=18" }
+  "engines": { "node": "^20.19.0 || >=22.12.0" }
 }

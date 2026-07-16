@@ -2,16 +2,44 @@ import { expect, test } from '@playwright/test';
 
 test('SPA navigation and reactive activity filtering', async ({ page }) => {
   await page.goto('http://127.0.0.1:4000/');
+  await expect(page).toHaveTitle('Northstar Operations');
   await expect(page.getByRole('heading', { name: 'Everything is running smoothly.' })).toBeVisible();
 
   await page.getByRole('link', { name: 'Activity' }).click();
   await expect(page).toHaveURL('http://127.0.0.1:4000/activity');
+  await expect(page).toHaveTitle('Activity · Northstar Operations');
   await expect(page.getByTestId('activity-list').getByRole('listitem')).toHaveCount(4);
 
   await page.getByRole('button', { name: 'deployment' }).click();
   await expect(page.getByTestId('activity-list').getByRole('listitem')).toHaveCount(2);
   await expect(page.getByText('Production deployment completed')).toBeVisible();
   await expect(page.getByText('Workspace member invited')).toHaveCount(0);
+});
+
+test('native keyboard action submission replays 422 fields without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  try {
+    await page.goto('http://127.0.0.1:3002/workspace');
+    await expect(page).toHaveURL(/\/login\?next=/);
+    await page.getByRole('button', { name: 'Sign in as Demo Operator' }).click();
+    await expect(page.getByRole('heading', { name: 'Operations dashboard' })).toBeVisible();
+
+    await page.getByRole('link', { name: 'Users' }).click();
+    await page.getByRole('link', { name: 'View user' }).first().click();
+    const name = page.locator('#native-user-name');
+    await name.fill('x');
+    await name.press('Enter');
+    await expect(page.locator('noscript').getByRole('alert')).toContainText('Expected at least 2 characters.');
+    await expect(name).toHaveValue('x');
+
+    await name.fill('Ada Native');
+    await name.press('Enter');
+    await expect(page).toHaveURL(/\/workspace\/users\/1$/);
+    await expect(page.getByRole('heading', { name: 'Ada Native' })).toBeVisible();
+  } finally {
+    await context.close();
+  }
 });
 
 test('SSR sends application HTML, hydrates it in place, and navigates on the client', async ({ page, request }) => {
@@ -69,8 +97,13 @@ test('authenticated SSR data, mutations, theme persistence, and Monaco policy sa
   await editUser.press('Enter');
   await expect(editUser).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByRole('dialog')).toBeVisible();
-  await page.getByLabel('Display name').fill('Ada Byron');
+  await page.getByRole('dialog').getByLabel('Display name').fill('Ada Byron');
+  const actionResponse = page.waitForResponse((response) =>
+    response.request().method() === 'POST'
+      && response.request().headers().accept?.startsWith('application/vnd.askr.action+json'),
+  );
   await page.getByRole('button', { name: 'Save user' }).click();
+  expect((await actionResponse).status()).toBe(200);
   await expect(page.getByRole('status')).toHaveText('User saved.');
   await page.getByRole('button', { name: 'Cancel' }).click();
   await page.getByRole('link', { name: 'Users' }).click();
@@ -82,6 +115,29 @@ test('authenticated SSR data, mutations, theme persistence, and Monaco policy sa
   expect(storedTheme).toMatch(/^(light|dark)$/);
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme-choice', storedTheme!);
+
+  await page.getByRole('link', { name: 'Language' }).click();
+  await page.getByLabel('Workspace language').selectOption('es');
+  await expect(page.getByRole('heading', { name: 'Idioma y región' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.locator('[data-catalog="es"]')).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Idioma y región' })).toBeVisible();
+  await expect(page.getByLabel('Idioma del espacio de trabajo')).toHaveValue('es');
+
+  await page.getByRole('link', { name: 'Deferred data' }).evaluate((link) =>
+    (link as HTMLAnchorElement).click(),
+  );
+  await expect(page).toHaveURL(/\/workspace\/deferred$/);
+  await expect(page.getByText('Loading deferred result…')).toBeVisible();
+  await expect(page.getByText('Deferred workspace data is ready.')).toBeVisible();
+
+  await page.getByRole('link', { name: 'Deferred failure' }).evaluate((link) =>
+    (link as HTMLAnchorElement).click(),
+  );
+  await expect(page).toHaveURL(/\/workspace\/deferred-failure$/);
+  await expect(page.getByText('Loading rejected result…')).toBeVisible();
+  await expect(page.getByRole('alert')).toContainText('demo rejection');
 
   await page.getByRole('link', { name: 'Policies' }).click();
   await expect(page.getByRole('heading', { name: 'Support escalation' })).toBeVisible();

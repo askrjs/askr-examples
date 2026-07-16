@@ -41,8 +41,8 @@ export const policyQuery = defineQuery<{ id: string }, Policy>({
   fetch: ({ id, signal }) => getJson(`/api/policies/${encodeURIComponent(id)}`, signal),
 });
 
-export const useDashboard = () => createQuery(dashboardQuery, {});
-export const useActivity = () => createQuery(activityQuery, {});
-export const useUsers = () => createQuery(usersQuery, {});
-export const useUser = (id: string) => createQuery(userQuery, { id });
-export const usePolicy = (id: string) => createQuery(policyQuery, { id });
+export const dashboardData = () => createQuery(dashboardQuery, {});
+export const activityData = () => createQuery(activityQuery, {});
+export const usersData = () => createQuery(usersQuery, {});
+export const userData = (id: string) => createQuery(userQuery, { id });
+export const policyData = (id: string) => createQuery(policyQuery, { id });

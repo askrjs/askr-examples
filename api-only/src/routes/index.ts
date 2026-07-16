@@ -1,4 +1,5 @@
-import { schema, type ApiDefinition, type Schema } from '@askrjs/server/openapi';
+import { schema, type Schema } from '@askrjs/schema';
+import type { ApiDefinition } from '@askrjs/server/openapi';
 import type { AppDependencies } from '../boot/dependencies.js';
 import { registerUserRoutes } from './users.js';
 

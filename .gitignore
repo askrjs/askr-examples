@@ -4,3 +4,4 @@ dist/
 .vitest/
 playwright-report/
 test-results/
+ssg/.askr/

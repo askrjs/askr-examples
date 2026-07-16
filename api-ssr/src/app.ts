@@ -3,12 +3,20 @@ import { createServerApp } from '@askrjs/server';
 import { createAskrPageHandler } from '@askrjs/server/askr';
 import { accessLog, requestId, securityHeaders } from '@askrjs/server/middleware';
 import type { AppDependencies } from './boot/dependencies.js';
+import { createActions } from './boot/actions.js';
 import { createQueryRegistry } from './boot/queries.js';
+import {
+  createApplicationTelemetry,
+  type ApplicationTelemetry,
+} from './boot/telemetry.js';
 import { SESSION_COOKIE } from './domains/sessions/repository.js';
 import { pageRegistry } from './application/routes.js';
 import api from './api.js';
 
-export function createApp(deps: AppDependencies) {
+export function createApp(
+  deps: AppDependencies,
+  telemetry: ApplicationTelemetry = createApplicationTelemetry(),
+) {
   const router = api.createRouter(deps);
   // Keep API failures as Problem Details instead of falling through to page SSR.
   router.get('/api/*', (ctx) => ctx.notFound('API route not found'));
@@ -34,9 +42,11 @@ export function createApp(deps: AppDependencies) {
       readyz: () => deps.users.ready(),
       startupz: () => true,
     },
+    telemetry,
     fallback: createAskrPageHandler({
       registry: pageRegistry,
       queryRegistry: createQueryRegistry(deps),
+      actions: createActions(deps),
     }),
     onError: (_error, ctx) => ctx.internalServerError('The request could not be completed'),
   });

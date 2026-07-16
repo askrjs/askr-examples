@@ -1,5 +1,5 @@
 import { ActivityIcon, GaugeIcon, MoonIcon, SunIcon } from '@askrjs/lucide';
-import { ThemeProvider, ThemeToggle } from '@askrjs/themes/theme';
+import { ThemeScope, ThemeToggle } from '@askrjs/themes/theme';
 import {
   Container,
   Header,
@@ -14,7 +14,7 @@ import {
 
 export function OperationsLayout({ children }: { children?: unknown }) {
   return (
-    <ThemeProvider storageKey="askr-examples-theme">
+    <ThemeScope storageKey="askr-examples-theme">
       <Header position="sticky">
         <Container size="xl" py="lg">
           <Navbar>
@@ -40,6 +40,6 @@ export function OperationsLayout({ children }: { children?: unknown }) {
       <Main>
         <Container size="xl" py="2xl"><Stack gap="2xl">{children}</Stack></Container>
       </Main>
-    </ThemeProvider>
+    </ThemeScope>
   );
 }

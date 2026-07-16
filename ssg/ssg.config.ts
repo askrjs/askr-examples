@@ -9,4 +9,10 @@ export const staticConfig = {
   seed,
   document: renderDocument,
   concurrency: 1,
+  assets: [
+    {
+      from: './.askr/client/assets',
+      to: 'assets',
+    },
+  ],
 } as const;

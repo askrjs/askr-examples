@@ -5,8 +5,7 @@ export default defineConfig({
   plugins: [askr()],
   resolve: { preserveSymlinks: true },
   build: {
-    outDir: 'dist/static',
-    emptyOutDir: false,
+    outDir: '.askr/client',
     rollupOptions: {
       input: './src/client.tsx',
       output: {

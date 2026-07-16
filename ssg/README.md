@@ -7,8 +7,8 @@ This supplemental workspace generates public Northstar operations runbooks. It d
 ```sh
 npm install
 npm run dev             # inspect routes in Vite development
-npm run generate        # generate HTML and metadata only
-npm run build           # generate pages and build client assets
+npm run generate        # run full generation through the Askr CLI
+npm run build           # build assets and atomically publish the complete site
 npm start               # serve the built static output
 npm test                # route expansion, document, and metadata assertions
 npm run typecheck
@@ -23,6 +23,6 @@ npm run lint
 - `src/pages.tsx` and `src/components/*` compose theme primitives.
 - `src/client.tsx` hydrates the interactive control.
 - `ssg.config.ts` defines output, seed, and concurrency.
-- `ssg-build.ts` runs the atomic generator.
+- `askr ssg` runs the executable config and atomically publishes pages, metadata, the incremental manifest, and client assets.
 
 After `npm run build`, open `/`, `/runbooks/api-recovery`, and `/runbooks/policy-rollback` through `npm start`. The generated `dist/static/metadata.json` records the complete route result.

@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import { renderRouteRequestToString } from '@askrjs/askr/ssr';
 import { pageRegistry as spaRegistry } from '../spa/src/application/routes.js';
@@ -12,6 +12,19 @@ import platformApi from '../api-ssr/src/api.js';
 const basePaths = ['/', '/activity', '/*'];
 
 describe('progressive example journey contract', () => {
+  it('should keep browser features behind public function-first package surfaces', async () => {
+    const root = new URL('../api-ssr/src/features/', import.meta.url);
+    const files = (await readdir(root, { recursive: true }))
+      .filter((file) => /\.(?:ts|tsx)$/.test(file));
+    for (const file of files) {
+      const source = await readFile(new URL(file, root), 'utf8');
+      expect(source, file).not.toMatch(/@askrjs\/server|(?:^|\/)server(?:\/|['"])/m);
+      expect(source, file).not.toMatch(/@askrjs\/askr\/src|__askr_/);
+      expect(source, file).not.toMatch(/\buse[A-Z]\w*\b|\b[A-Z]\w*Provider\b/);
+      expect(source, file).not.toMatch(/\b(?:defineContext|readContext)\b|<Await\b/);
+    }
+  });
+
   it('should retain base route paths and application vocabulary at every primary stage', async () => {
     for (const registry of [spaRegistry, ssrRegistry, platformRegistry]) {
       const paths = registry.manifest.records.map((record) => record.path);

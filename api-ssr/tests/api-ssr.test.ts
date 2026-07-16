@@ -23,6 +23,13 @@ async function signIn(app: ReturnType<typeof createApp>): Promise<string> {
   return cookieFrom(response);
 }
 
+function hiddenValue(html: string, name: string): string {
+  const pattern = new RegExp(`name=["']${name}["'][^>]*value=["']([^"']+)["']`);
+  const value = html.match(pattern)?.[1];
+  if (!value) throw new Error(`Missing hidden ${name} value.`);
+  return value;
+}
+
 function withCookie(path: string, cookie: string, init: RequestInit = {}): Request {
   const headers = new Headers(init.headers);
   headers.set('cookie', cookie);
@@ -79,16 +86,25 @@ describe('API and SSR culmination', () => {
     expect(html).toContain('Healthy services');
     expect(html).not.toContain('Loading dashboard');
     expect(html).toContain('data-askr-render-data');
-    expect(html).toContain('__askr_query_cache');
+    expect(html).toContain('"version":1');
+    expect(html).toContain('"resources":{');
+    expect(html).not.toContain('__askr_query_cache');
   });
 
-  it('should update users with bind precedence, permissions, and query-visible persistence', async () => {
+  it('should isolate declared request sources and persist authorized user updates', async () => {
     const app = createApp(createDependencies());
     const cookie = await signIn(app);
-    const update = await app.fetch(withCookie('/api/users/1?name=Katherine%20Johnson', cookie, {
+    const rejected = await app.fetch(withCookie('/api/users/1?name=Katherine%20Johnson', cookie, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json', 'if-match': '"1"' },
       body: JSON.stringify({ id: 'body-id', name: 'Body Name' }),
+    }));
+    expect(rejected.status).toBe(422);
+
+    const update = await app.fetch(withCookie('/api/users/1?name=Ignored%20Query', cookie, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'if-match': '"1"' },
+      body: JSON.stringify({ name: 'Katherine Johnson' }),
     }));
     expect(update.status).toBe(200);
     expect(await update.json()).toMatchObject({ id: '1', name: 'Katherine Johnson', version: 2 });
@@ -110,6 +126,86 @@ describe('API and SSR culmination', () => {
       body: JSON.stringify({ name: 'Forbidden Writer' }),
     }));
     expect(denied.status).toBe(403);
+  });
+
+  it('should execute authorized page actions with CSRF, replay, redirect, and enhanced invalidation', async () => {
+    const app = createApp(createDependencies());
+    const cookie = await signIn(app);
+    const page = await app.fetch(withCookie('/workspace/users/1', cookie));
+    const csrf = hiddenValue(await page.text(), '_csrf');
+
+    const invalidBody = new URLSearchParams({
+      _askr_action: 'users.update-name',
+      _csrf: csrf,
+      name: 'x',
+    });
+    const invalid = await app.fetch(withCookie('/workspace/users/1', cookie, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: invalidBody,
+    }));
+    expect(invalid.status).toBe(422);
+    const replay = await invalid.text();
+    expect(replay).toContain('value="x"');
+    expect(replay).toContain('Expected at least 2 characters.');
+
+    const enhanced = await app.fetch(withCookie('/workspace/users/1', cookie, {
+      method: 'POST',
+      headers: {
+        accept: 'application/vnd.askr.action+json;v=1',
+        'content-type': 'application/json',
+        'x-askr-action': 'users.update-name',
+        'x-askr-csrf-token': csrf,
+      },
+      body: JSON.stringify({ name: 'Ada Byron' }),
+    }));
+    expect(enhanced.status).toBe(200);
+    expect(await enhanced.json()).toMatchObject({
+      version: 1,
+      ok: true,
+      invalidates: ['users'],
+      result: { name: 'Ada Byron' },
+    });
+
+    const freshPage = await app.fetch(withCookie('/workspace/users/1', cookie));
+    expect(await freshPage.text()).toContain('Ada Byron');
+
+    const native = await app.fetch(withCookie('/workspace/users/1', cookie, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        _askr_action: 'users.update-name',
+        _csrf: csrf,
+        name: 'Ada King',
+      }),
+    }));
+    expect(native.status).toBe(303);
+    expect(native.headers.get('location')).toBe('/workspace/users/1');
+  });
+
+  it('should reject page actions given missing CSRF or unmatched route authorization', async () => {
+    const app = createApp(createDependencies());
+    const cookie = await signIn(app);
+    const page = await app.fetch(withCookie('/workspace/users/1', cookie));
+    const csrf = hiddenValue(await page.text(), '_csrf');
+
+    const missingCsrf = await app.fetch(withCookie('/workspace/users/1', cookie, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-askr-action': 'users.update-name' },
+      body: JSON.stringify({ name: 'Blocked Update' }),
+    }));
+    expect(missingCsrf.status).toBe(403);
+
+    const wrongRoute = await app.fetch(withCookie('/workspace', cookie, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-askr-action': 'users.update-name',
+        'x-askr-csrf-token': csrf,
+      },
+      body: JSON.stringify({ name: 'Blocked Update' }),
+    }));
+    expect(wrongRoute.status).toBe(404);
   });
 
   it('should persist valid policies and reject stale or invalid writes', async () => {

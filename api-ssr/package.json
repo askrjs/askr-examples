@@ -17,15 +17,19 @@
     "check": "npm run lint && npm run typecheck && npm test && npm run openapi:check"
   },
   "dependencies": {
-    "@askrjs/auth": "file:../../askr-auth",
     "@askrjs/askr": "file:../../askr",
+    "@askrjs/auth": "file:../../askr-auth",
     "@askrjs/charts": "file:../../askr-charts",
+    "@askrjs/i18n": "file:../../askr-i18n",
     "@askrjs/lucide": "file:../../askr-lucide",
     "@askrjs/monaco": "file:../../askr-monaco",
     "@askrjs/node": "file:../../askr-node",
+    "@askrjs/otel": "file:../../askr-otel",
+    "@askrjs/schema": "file:../../askr-schema",
     "@askrjs/server": "file:../../askr-server",
     "@askrjs/themes": "file:../../askr-themes",
     "@askrjs/ui": "file:../../askr-ui",
+    "@opentelemetry/api": "^1.9.0",
     "monaco-editor": "^0.55.1"
   },
   "devDependencies": {
@@ -37,5 +41,7 @@
     "vite-plus": "^0.2.4",
     "vitest": "^4.0.0"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
 }

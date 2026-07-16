@@ -1,5 +1,6 @@
 import { requireAnonymous, requirePermission, requireUser } from '@askrjs/auth';
-import { schema, security, type ApiDefinition, type Schema } from '@askrjs/server/openapi';
+import { schema, type Schema } from '@askrjs/schema';
+import { security, type ApiDefinition } from '@askrjs/server/openapi';
 import type { AppDependencies } from '../boot/dependencies.js';
 import { SESSION_COOKIE } from '../domains/sessions/repository.js';
 import type { UserUpdate } from '../domains/users/repository.js';
@@ -27,6 +28,26 @@ function editableUser(input: Record<string, unknown>): UserUpdate | null {
   return Object.keys(update).length ? update : null;
 }
 
+const IdParams = schema.object({ id: schema.string() });
+const VersionHeaders = schema.object(
+  { 'if-match': schema.string() },
+  { additionalProperties: true },
+);
+const UserBody = schema.object({
+  name: schema.optional(schema.string({ minLength: 2 })),
+  email: schema.optional(schema.email()),
+  role: schema.optional(schema.enum(['operator', 'viewer'])),
+});
+const PolicyBody = schema.object({ source: schema.string({ minLength: 1 }) });
+const SessionQuery = schema.object({ next: schema.optional(schema.string()) });
+const Problem = schema.object({
+  type: schema.string(),
+  title: schema.string(),
+  status: schema.integer({ minimum: 100, maximum: 599 }),
+  detail: schema.optional(schema.string()),
+  instance: schema.optional(schema.string()),
+}, { additionalProperties: true });
+
 export interface ApiSchemas {
   Activity: Schema;
   AuthContext: Schema;
@@ -46,16 +67,27 @@ export function registerApiRoutes(api: ApiDefinition<AppDependencies>, schemas: 
     .operationId('getSession').summary('Get the current demo session').tags('Session')
     .ok(schemas.AuthContext);
 
-  api.post('/api/session', async (ctx, { sessions }) => {
-    const session = await sessions.create();
-    return ctx.setCookie(ctx.created({ authenticated: true }), SESSION_COOKIE, session.id, {
-      httpOnly: true,
-      path: '/',
-      sameSite: 'lax',
-    });
+  api.post('/api/session', {
+    input: { query: SessionQuery },
+    documentation: { query: { next: {} } },
+    async handler(ctx, input, { sessions }) {
+      const session = await sessions.create();
+      const requested = input.query.next;
+      const next = requested?.startsWith('/') && !requested.startsWith('//')
+        ? requested
+        : '/workspace';
+      const response = ctx.headers.get('accept')?.includes('text/html')
+        ? ctx.redirect(next, 303)
+        : ctx.created({ authenticated: true });
+      return ctx.setCookie(response, SESSION_COOKIE, session.id, {
+        httpOnly: true,
+        path: '/',
+        sameSite: 'lax',
+      });
+    },
   }).operationId('createSession').summary('Create the deterministic demo session').tags('Session')
     .access(requireAnonymous(), security.none())
-    .created(schema.object({ authenticated: schema.boolean() })).forbidden();
+    .created(schema.object({ authenticated: schema.boolean() })).seeOther().forbidden();
 
   api.delete('/api/session', async (ctx, { sessions }) => {
     if (ctx.auth.session) await sessions.delete(ctx.auth.session.id);
@@ -75,62 +107,80 @@ export function registerApiRoutes(api: ApiDefinition<AppDependencies>, schemas: 
     .operationId('listUsers').summary('List users').tags('Users')
     .access(requirePermission('users:read'), security.require('cookieSession')).ok(schema.array(schemas.User));
 
-  api.get('/api/users/{id}', async (ctx, { users }) => {
-    const user = await users.find(ctx.params.id, ctx.signal);
-    return user
-      ? ctx.ok(user, { headers: { etag: `"${user.version}"` } })
-      : ctx.notFound('User not found');
+  api.get('/api/users/{id}', {
+    input: { params: IdParams },
+    documentation: { params: { id: {} } },
+    async handler(ctx, input, { users }) {
+      const user = await users.find(input.params.id, ctx.signal);
+      return user
+        ? ctx.ok(user, { headers: { etag: `"${user.version}"` } })
+        : ctx.notFound('User not found');
+    },
   }).operationId('getUser').summary('Get a user').tags('Users')
     .access(requirePermission('users:read'), security.require('cookieSession'))
-    .pathParam('id', schema.string()).ok(schemas.User).notFound();
+    .ok(schemas.User).notFound();
 
-  api.patch('/api/users/{id}', async (ctx, { users }) => {
-    const bound = await ctx.bind<Record<string, unknown> & { id: string }>();
-    const update = editableUser(bound);
-    if (!update) return ctx.badRequest('name, email, or role must contain a valid editable value');
-    const expectedVersion = parseVersion(ctx.headers.get('if-match'));
-    if (expectedVersion === null) return ctx.problem(428, 'If-Match is required');
-    if (!Number.isInteger(expectedVersion)) return ctx.badRequest('If-Match must contain a numeric version');
-    const result = await users.update(bound.id, update, expectedVersion);
-    if (result.kind === 'missing') return ctx.notFound('User not found');
-    if (result.kind === 'conflict') return ctx.conflict(`User version ${result.current.version} is current`);
-    return ctx.ok(result.user, { headers: { etag: `"${result.user.version}"` } });
+  api.patch('/api/users/{id}', {
+    input: {
+      params: IdParams,
+      headers: VersionHeaders,
+      body: { schema: UserBody, mediaTypes: ['application/json'] },
+    },
+    documentation: {
+      params: { id: {} },
+      headers: { 'if-match': { description: 'Quoted user version' } },
+      body: { required: true },
+    },
+    async handler(ctx, input, { users }) {
+      const update = editableUser(input.body);
+      if (!update) return ctx.badRequest('name, email, or role must contain a valid editable value');
+      const expectedVersion = parseVersion(input.headers['if-match']);
+      if (!Number.isInteger(expectedVersion)) return ctx.badRequest('If-Match must contain a numeric version');
+      const result = await users.update(input.params.id, update, expectedVersion!);
+      if (result.kind === 'missing') return ctx.notFound('User not found');
+      if (result.kind === 'conflict') return ctx.conflict(`User version ${result.current.version} is current`);
+      return ctx.ok(result.user, { headers: { etag: `"${result.user.version}"` } });
+    },
   }).operationId('updateUser').summary('Update a user').tags('Users')
     .access(requirePermission('users:write'), security.require('cookieSession'))
-    .pathParam('id', schema.string())
-    .headerParam('If-Match', schema.string(), { required: true })
-    .jsonBody(schema.object({
-      name: schema.optional(schema.string({ minLength: 2 })),
-      email: schema.optional(schema.email()),
-      role: schema.optional(schema.enum(['operator', 'viewer'])),
-    }), { required: true })
     .ok(schemas.User).badRequest().notFound().conflict()
-    .response(428, schema.ref('Problem'), { mediaType: 'application/problem+json', description: 'Precondition Required' });
+    .response(428, Problem, { mediaType: 'application/problem+json', description: 'Precondition Required' });
 
-  api.get('/api/policies/{id}', async (ctx, { policies }) => {
-    const policy = await policies.find(ctx.params.id, ctx.signal);
-    return policy
-      ? ctx.ok(policy, { headers: { etag: `"${policy.version}"` } })
-      : ctx.notFound('Policy not found');
+  api.get('/api/policies/{id}', {
+    input: { params: IdParams },
+    documentation: { params: { id: {} } },
+    async handler(ctx, input, { policies }) {
+      const policy = await policies.find(input.params.id, ctx.signal);
+      return policy
+        ? ctx.ok(policy, { headers: { etag: `"${policy.version}"` } })
+        : ctx.notFound('Policy not found');
+    },
   }).operationId('getPolicy').summary('Get a policy').tags('Policies')
     .access(requirePermission('policies:read'), security.require('cookieSession'))
-    .pathParam('id', schema.string()).ok(schemas.Policy).notFound();
+    .ok(schemas.Policy).notFound();
 
-  api.put('/api/policies/{id}', async (ctx, { policies }) => {
-    const bound = await ctx.bind<Record<string, unknown> & { id: string }>();
-    if (typeof bound.source !== 'string' || !bound.source.trim()) return ctx.badRequest('source is required');
-    try { JSON.parse(bound.source); } catch { return ctx.badRequest('source must contain valid JSON'); }
-    const expectedVersion = parseVersion(ctx.headers.get('if-match'));
-    if (expectedVersion === null) return ctx.problem(428, 'If-Match is required');
-    if (!Number.isInteger(expectedVersion)) return ctx.badRequest('If-Match must contain a numeric version');
-    const result = await policies.update(bound.id, bound.source, expectedVersion);
-    if (result.kind === 'missing') return ctx.notFound('Policy not found');
-    if (result.kind === 'conflict') return ctx.conflict(`Policy version ${result.current.version} is current`);
-    return ctx.ok(result.policy, { headers: { etag: `"${result.policy.version}"` } });
+  api.put('/api/policies/{id}', {
+    input: {
+      params: IdParams,
+      headers: VersionHeaders,
+      body: { schema: PolicyBody, mediaTypes: ['application/json'] },
+    },
+    documentation: {
+      params: { id: {} },
+      headers: { 'if-match': { description: 'Quoted policy version' } },
+      body: { required: true },
+    },
+    async handler(ctx, input, { policies }) {
+      try { JSON.parse(input.body.source); } catch { return ctx.badRequest('source must contain valid JSON'); }
+      const expectedVersion = parseVersion(input.headers['if-match']);
+      if (!Number.isInteger(expectedVersion)) return ctx.badRequest('If-Match must contain a numeric version');
+      const result = await policies.update(input.params.id, input.body.source, expectedVersion!);
+      if (result.kind === 'missing') return ctx.notFound('Policy not found');
+      if (result.kind === 'conflict') return ctx.conflict(`Policy version ${result.current.version} is current`);
+      return ctx.ok(result.policy, { headers: { etag: `"${result.policy.version}"` } });
+    },
   }).operationId('updatePolicy').summary('Update a policy').tags('Policies')
     .access(requirePermission('policies:write'), security.require('cookieSession'))
-    .pathParam('id', schema.string()).headerParam('If-Match', schema.string(), { required: true })
-    .jsonBody(schema.object({ source: schema.string() }), { required: true })
     .ok(schemas.Policy).badRequest().notFound().conflict()
-    .response(428, schema.ref('Problem'), { mediaType: 'application/problem+json', description: 'Precondition Required' });
+    .response(428, Problem, { mediaType: 'application/problem+json', description: 'Precondition Required' });
 }

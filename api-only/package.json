@@ -18,6 +18,7 @@
   "dependencies": {
     "@askrjs/auth": "file:../../askr-auth",
     "@askrjs/node": "file:../../askr-node",
+    "@askrjs/schema": "file:../../askr-schema",
     "@askrjs/server": "file:../../askr-server"
   },
   "devDependencies": {
@@ -27,5 +28,5 @@
     "vite-plus": "^0.2.4",
     "vitest": "^4.0.0"
   },
-  "engines": { "node": ">=18" }
+  "engines": { "node": "^20.19.0 || >=22.12.0" }
 }
