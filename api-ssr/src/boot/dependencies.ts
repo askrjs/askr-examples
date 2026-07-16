@@ -1,13 +1,22 @@
-import { createInMemoryActivityRepository, type ActivityRepository } from '../domains/activity/repository.js';
-import { createInMemoryDashboardRepository, type DashboardRepository } from '../domains/dashboard/repository.js';
-import { createInMemoryPolicyRepository, type PolicyRepository } from '../domains/policies/repository.js';
+import {
+  createInMemoryActivityRepository,
+  type ActivityRepository,
+} from "../domains/activity/repository.js";
+import {
+  createInMemoryDashboardRepository,
+  type DashboardRepository,
+} from "../domains/dashboard/repository.js";
+import {
+  createInMemoryPolicyRepository,
+  type PolicyRepository,
+} from "../domains/policies/repository.js";
 import {
   createInMemoryPrincipalRepository,
   createInMemorySessionRepository,
   type PrincipalRepository,
   type SessionRepository,
-} from '../domains/sessions/repository.js';
-import { createInMemoryUserRepository, type UserRepository } from '../domains/users/repository.js';
+} from "../domains/sessions/repository.js";
+import { createInMemoryUserRepository, type UserRepository } from "../domains/users/repository.js";
 
 export interface ApplicationLogger {
   write(entry: { method: string; path: string; status: number; requestId?: string }): void;

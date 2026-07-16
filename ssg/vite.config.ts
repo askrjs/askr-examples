@@ -1,16 +1,16 @@
-import { defineConfig } from 'vite-plus';
-import { askr } from '@askrjs/vite';
+import { defineConfig } from "vite-plus";
+import { askr } from "@askrjs/vite";
 
 export default defineConfig({
   plugins: [askr()],
   resolve: { preserveSymlinks: true },
   build: {
-    outDir: '.askr/client',
+    outDir: ".askr/client",
     rollupOptions: {
-      input: './src/client.tsx',
+      input: "./src/client.tsx",
       output: {
-        entryFileNames: 'assets/client.js',
-        assetFileNames: 'assets/client[extname]',
+        entryFileNames: "assets/client.js",
+        assetFileNames: "assets/client[extname]",
       },
     },
   },

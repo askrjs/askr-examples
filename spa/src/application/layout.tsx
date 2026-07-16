@@ -1,5 +1,5 @@
-import { ActivityIcon, GaugeIcon, MoonIcon, SunIcon } from '@askrjs/lucide';
-import { ThemeScope, ThemeToggle } from '@askrjs/themes/theme';
+import { ActivityIcon, GaugeIcon, MoonIcon, SunIcon } from "@askrjs/lucide";
+import { ThemeScope, ThemeToggle } from "@askrjs/themes/theme";
 import {
   Container,
   Header,
@@ -10,7 +10,7 @@ import {
   NavGroup,
   NavLink,
   Stack,
-} from '@askrjs/themes/components';
+} from "@askrjs/themes/components";
 
 export function OperationsLayout({ children }: { children?: unknown }) {
   return (
@@ -25,8 +25,12 @@ export function OperationsLayout({ children }: { children?: unknown }) {
             </NavBrand>
             <NavGroup align="end">
               <Inline gap="2" align="center" wrap>
-                <NavLink href="/" match="exact">Overview</NavLink>
-                <NavLink href="/activity"><ActivityIcon aria-hidden="true" /> Activity</NavLink>
+                <NavLink href="/" match="exact">
+                  Overview
+                </NavLink>
+                <NavLink href="/activity">
+                  <ActivityIcon aria-hidden="true" /> Activity
+                </NavLink>
                 <ThemeToggle
                   aria-label="Toggle color theme"
                   lightIcon={<SunIcon aria-hidden="true" />}
@@ -38,7 +42,9 @@ export function OperationsLayout({ children }: { children?: unknown }) {
         </Container>
       </Header>
       <Main>
-        <Container size="xl" py="2xl"><Stack gap="2xl">{children}</Stack></Container>
+        <Container size="xl" py="2xl">
+          <Stack gap="2xl">{children}</Stack>
+        </Container>
       </Main>
     </ThemeScope>
   );

@@ -1,9 +1,10 @@
-import type { DocumentRenderer } from '@askrjs/askr/ssg';
+import type { DocumentRenderer } from "@askrjs/askr/ssg";
 
 export const renderDocument: DocumentRenderer = ({ appHtml, context }) => {
-  const title = context.pathname === '/'
-    ? 'Northstar Runbooks'
-    : `Northstar Runbook · ${context.params.slug ?? 'Operations'}`;
+  const title =
+    context.pathname === "/"
+      ? "Northstar Runbooks"
+      : `Northstar Runbook · ${context.params.slug ?? "Operations"}`;
   // Every expanded route uses this complete document boundary.
   return `<!doctype html>
 <html lang="en">

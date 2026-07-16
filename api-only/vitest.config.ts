@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite-plus';
+import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-  test: { include: ['tests/**/*.test.ts'] },
+  test: { include: ["tests/**/*.test.ts"] },
 });

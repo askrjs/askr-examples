@@ -5,7 +5,7 @@
   "description": "Runnable examples for the Askr platform",
   "license": "Apache-2.0",
   "type": "module",
-  "workspaces": ["spa", "ssr-only", "api-ssr", "api-only", "ssg"],
+  "workspaces": ["spa", "ssr-only", "api-ssr", "api-only", "ssg", "mcp-server"],
   "scripts": {
     "fmt": "npm run fmt --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",

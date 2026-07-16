@@ -1,6 +1,6 @@
-import type { Query } from '@askrjs/askr/data';
-import { Alert, Button } from '@askrjs/themes/components';
-import { RefreshCwIcon } from '@askrjs/lucide';
+import type { Query } from "@askrjs/askr/data";
+import { Alert, Button } from "@askrjs/themes/components";
+import { RefreshCwIcon } from "@askrjs/lucide";
 
 export function QueryError<T extends object>({ query }: { query: Query<T> }) {
   return (

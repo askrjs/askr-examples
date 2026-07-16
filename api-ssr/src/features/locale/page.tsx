@@ -1,11 +1,11 @@
-import { state } from '@askrjs/askr';
-import { Label, PageHeader, Stack } from '@askrjs/themes/components';
+import { state } from "@askrjs/askr";
+import { Label, PageHeader, Stack } from "@askrjs/themes/components";
 import {
   readWorkspaceLocale,
   workspaceText,
   writeWorkspaceLocale,
   type WorkspaceLocale,
-} from '../../application/i18n.js';
+} from "../../application/i18n.js";
 
 function LocaleContent({
   locale,
@@ -18,20 +18,22 @@ function LocaleContent({
   return (
     <Stack gap="4" data-catalog={snapshot.catalog}>
       <PageHeader
-        title={workspaceText.text('title')}
-        description={workspaceText.text('description')}
+        title={workspaceText.text("title")}
+        description={workspaceText.text("description")}
       />
-      <Label for="workspace-locale">{workspaceText.text('field')}</Label>
+      <Label for="workspace-locale">{workspaceText.text("field")}</Label>
       <select
         id="workspace-locale"
         name="locale"
         value={locale}
-        onChange={(event: Event) => select((event.target as HTMLSelectElement).value as WorkspaceLocale)}
+        onChange={(event: Event) =>
+          select((event.target as HTMLSelectElement).value as WorkspaceLocale)
+        }
       >
         <option value="en">English</option>
         <option value="es">Español</option>
       </select>
-      <p role="status">{workspaceText.text('current', locale)}</p>
+      <p role="status">{workspaceText.text("current", locale)}</p>
     </Stack>
   );
 }

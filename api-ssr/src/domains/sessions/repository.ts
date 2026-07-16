@@ -1,7 +1,7 @@
-import type { AuthSession, Principal } from '@askrjs/auth';
+import type { AuthSession, Principal } from "@askrjs/auth";
 
-export const SESSION_COOKIE = 'northstar-session';
-export const DEMO_SESSION_ID = 'northstar-demo-session';
+export const SESSION_COOKIE = "northstar-session";
+export const DEMO_SESSION_ID = "northstar-demo-session";
 
 export interface SessionRepository {
   get(id: string, options?: { request: Request; signal: AbortSignal }): Promise<AuthSession | null>;
@@ -10,7 +10,10 @@ export interface SessionRepository {
 }
 
 export interface PrincipalRepository {
-  get(subject: string, options?: { request: Request; signal: AbortSignal }): Promise<Principal | null>;
+  get(
+    subject: string,
+    options?: { request: Request; signal: AbortSignal },
+  ): Promise<Principal | null>;
 }
 
 export function createInMemorySessionRepository(): SessionRepository {
@@ -22,21 +25,23 @@ export function createInMemorySessionRepository(): SessionRepository {
       return session ? { ...session } : null;
     },
     async create() {
-      const session: AuthSession = { id: DEMO_SESSION_ID, subject: 'demo-operator' };
+      const session: AuthSession = { id: DEMO_SESSION_ID, subject: "demo-operator" };
       sessions.set(session.id, session);
       return { ...session };
     },
-    async delete(id) { sessions.delete(id); },
+    async delete(id) {
+      sessions.delete(id);
+    },
   };
 }
 
 export function createInMemoryPrincipalRepository(): PrincipalRepository {
   const principal: Principal = {
-    id: 'demo-operator',
-    subject: 'demo-operator',
-    roles: ['operator'],
-    permissions: ['dashboard:read', 'users:read', 'users:write', 'policies:read', 'policies:write'],
-    name: 'Demo Operator',
+    id: "demo-operator",
+    subject: "demo-operator",
+    roles: ["operator"],
+    permissions: ["dashboard:read", "users:read", "users:write", "policies:read", "policies:write"],
+    name: "Demo Operator",
   };
   return {
     async get(subject, options) {

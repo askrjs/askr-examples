@@ -1,5 +1,5 @@
-import { Resolve, routeData, type Deferred } from '@askrjs/askr/router';
-import { Alert, PageHeader } from '@askrjs/themes/components';
+import { Resolve, routeData, type Deferred } from "@askrjs/askr/router";
+import { Alert, PageHeader } from "@askrjs/themes/components";
 
 type DeferredPageData = { message: Deferred<string> };
 

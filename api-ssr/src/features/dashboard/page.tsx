@@ -1,4 +1,4 @@
-import { LineChart } from '@askrjs/charts/components';
+import { LineChart } from "@askrjs/charts/components";
 import {
   Card,
   CardContent,
@@ -10,10 +10,10 @@ import {
   Stat,
   StatLabel,
   StatValue,
-} from '@askrjs/themes/components';
-import type { Dashboard } from '../../domains/dashboard/repository.js';
-import { dashboardData } from '../../domains/queries.js';
-import { QueryError } from '../shared/query-error.js';
+} from "@askrjs/themes/components";
+import type { Dashboard } from "../../domains/dashboard/repository.js";
+import { dashboardData } from "../../domains/queries.js";
+import { QueryError } from "../shared/query-error.js";
 
 export function DashboardPage() {
   const dashboard = dashboardData();
@@ -26,14 +26,28 @@ export function DashboardPage() {
 function DashboardContent({ dashboard }: { dashboard: Dashboard }) {
   return (
     <>
-      <PageHeader title="Operations dashboard" description="This data was prefetched into the server-rendered query cache." />
+      <PageHeader
+        title="Operations dashboard"
+        description="This data was prefetched into the server-rendered query cache."
+      />
       <Grid columns={{ base: 1, md: 3 }} gap="md">
-        <Stat><StatLabel>Healthy services</StatLabel><StatValue>{dashboard.healthyServices}</StatValue></Stat>
-        <Stat><StatLabel>Open incidents</StatLabel><StatValue>{dashboard.openIncidents}</StatValue></Stat>
-        <Stat><StatLabel>Active users</StatLabel><StatValue>{dashboard.activeUsers}</StatValue></Stat>
+        <Stat>
+          <StatLabel>Healthy services</StatLabel>
+          <StatValue>{dashboard.healthyServices}</StatValue>
+        </Stat>
+        <Stat>
+          <StatLabel>Open incidents</StatLabel>
+          <StatValue>{dashboard.openIncidents}</StatValue>
+        </Stat>
+        <Stat>
+          <StatLabel>Active users</StatLabel>
+          <StatValue>{dashboard.activeUsers}</StatValue>
+        </Stat>
       </Grid>
       <Card>
-        <CardHeader><CardTitle>Active users this week</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Active users this week</CardTitle>
+        </CardHeader>
         <CardContent>
           <LineChart label="Active users this week" data={dashboard.trend} showGrid />
         </CardContent>

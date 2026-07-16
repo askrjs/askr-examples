@@ -1,1 +1,1 @@
-export { app, default } from 'virtual:askr-server';
+export { app, default } from "virtual:askr-server";

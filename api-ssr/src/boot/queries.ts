@@ -1,12 +1,12 @@
-import { defineServerQueries, serveQuery } from '@askrjs/askr/data';
+import { defineServerQueries, serveQuery } from "@askrjs/askr/data";
 import {
   activityQuery,
   dashboardQuery,
   policyQuery,
   userQuery,
   usersQuery,
-} from '../domains/queries.js';
-import type { AppDependencies } from './dependencies.js';
+} from "../domains/queries.js";
+import type { AppDependencies } from "./dependencies.js";
 
 export function createQueryRegistry(deps: AppDependencies) {
   return defineServerQueries(

@@ -1,0 +1,30 @@
+{
+  "name": "@askrjs/example-mcp-server",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx --tsconfig tsconfig.runtime.json src/main.ts",
+    "build": "tsc -p tsconfig.json --pretty false",
+    "fmt": "vp fmt .",
+    "lint": "vp lint .",
+    "test": "vp test run",
+    "typecheck": "tsc --noEmit --pretty false",
+    "check": "npm run lint && npm run typecheck && npm test"
+  },
+  "dependencies": {
+    "@askrjs/node": "file:../../askr-node",
+    "@askrjs/schema": "file:../../askr-schema",
+    "@askrjs/server": "file:../../askr-server"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.0",
+    "vite-plus": "^0.2.4",
+    "vitest": "^4.0.0"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
+}

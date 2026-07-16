@@ -1,7 +1,7 @@
 {
   "name": "@askrjs/example-api-ssr",
-  "private": true,
   "version": "0.0.1",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vp dev --host 127.0.0.1 --port 3002",

@@ -1,4 +1,4 @@
-import { readWorkspaceLocale } from './application/i18n.js';
+import { readWorkspaceLocale } from "./application/i18n.js";
 
 document.documentElement.lang = readWorkspaceLocale();
-document.documentElement.dir = 'ltr';
+document.documentElement.dir = "ltr";

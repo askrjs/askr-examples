@@ -1,7 +1,7 @@
 {
   "name": "@askrjs/example-api-only",
-  "private": true,
   "version": "0.0.1",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "node --watch --import tsx src/server.ts",
@@ -28,5 +28,7 @@
     "vite-plus": "^0.2.4",
     "vitest": "^4.0.0"
   },
-  "engines": { "node": "^20.19.0 || >=22.12.0" }
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
 }

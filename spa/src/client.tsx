@@ -1,5 +1,5 @@
-import { createSPA } from '@askrjs/askr/boot';
-import { pageRegistry } from './application/routes.js';
-import './styles.css';
+import { createSPA } from "@askrjs/askr/boot";
+import { pageRegistry } from "./application/routes.js";
+import "./styles.css";
 
-await createSPA({ root: '#app', registry: pageRegistry });
+await createSPA({ root: "#app", registry: pageRegistry });

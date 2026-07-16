@@ -1,2 +1,2 @@
-declare module '*.css';
-declare module '@askrjs/themes/default';
+declare module "*.css";
+declare module "@askrjs/themes/default";

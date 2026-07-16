@@ -1,5 +1,5 @@
-import { derive, For, Show, state } from '@askrjs/askr';
-import { CheckCircleIcon, FilterIcon } from '@askrjs/lucide';
+import { derive, For, Show, state } from "@askrjs/askr";
+import { CheckCircleIcon, FilterIcon } from "@askrjs/lucide";
 import {
   Badge,
   Block,
@@ -14,14 +14,10 @@ import {
   Stat,
   StatLabel,
   StatValue,
-} from '@askrjs/themes/components';
-import { Link } from '@askrjs/askr/router';
-import {
-  activityEvents,
-  overviewStats,
-  type ActivityKind,
-} from './data.js';
-import { OperationsLayout } from './layout.js';
+} from "@askrjs/themes/components";
+import { Link } from "@askrjs/askr/router";
+import { activityEvents, overviewStats, type ActivityKind } from "./data.js";
+import { OperationsLayout } from "./layout.js";
 
 export function OverviewPage() {
   return (
@@ -29,7 +25,11 @@ export function OverviewPage() {
       <PageHeader
         title="Everything is running smoothly."
         description="Review service health, access changes, and policy activity from one operations workspace."
-        actions={<Button asChild variant="primary"><Link href="/activity">Review recent activity</Link></Button>}
+        actions={
+          <Button asChild variant="primary">
+            <Link href="/activity">Review recent activity</Link>
+          </Button>
+        }
       />
       <Grid columns={{ base: 1, md: 3 }} gap="md" aria-label="Workspace status">
         <For each={overviewStats} by={(stat) => stat.label}>
@@ -46,16 +46,14 @@ export function OverviewPage() {
   );
 }
 
-type ActivityFilter = 'all' | ActivityKind;
+type ActivityFilter = "all" | ActivityKind;
 
 export function ActivityPage() {
-  const [filter, setFilter] = state<ActivityFilter>('all');
+  const [filter, setFilter] = state<ActivityFilter>("all");
   const visibleEvents = derive(() =>
-    filter() === 'all'
-      ? activityEvents
-      : activityEvents.filter((event) => event.kind === filter()),
+    filter() === "all" ? activityEvents : activityEvents.filter((event) => event.kind === filter()),
   );
-  const filters: ActivityFilter[] = ['all', 'deployment', 'access', 'policy'];
+  const filters: ActivityFilter[] = ["all", "deployment", "access", "policy"];
 
   return (
     <OperationsLayout>
@@ -68,18 +66,20 @@ export function ActivityPage() {
         <For each={filters} by={(value) => value}>
           {(value) => (
             <Button
-              variant={filter() === value ? 'primary' : 'outline'}
-              aria-pressed={filter() === value ? 'true' : 'false'}
+              variant={filter() === value ? "primary" : "outline"}
+              aria-pressed={filter() === value ? "true" : "false"}
               onPress={() => setFilter(value)}
             >
-              {value === 'all' ? 'All activity' : value}
+              {value === "all" ? "All activity" : value}
             </Button>
           )}
         </For>
       </Inline>
       <Show
         when={() => visibleEvents().length > 0}
-        fallback={<EmptyState title="No matching activity" description="Choose another activity filter." />}
+        fallback={
+          <EmptyState title="No matching activity" description="Choose another activity filter." />
+        }
       >
         <Stack as="ol" gap="3" p="0" data-testid="activity-list" aria-live="polite">
           <For each={() => visibleEvents()} by={(event) => event.id}>
@@ -89,7 +89,10 @@ export function ActivityPage() {
                   <CardContent>
                     <Block rowFrom="sm" justify="between" gap="md">
                       <Stack gap="2">
-                        <Inline gap="2" align="center"><Badge>{event.kind}</Badge><strong>{event.title}</strong></Inline>
+                        <Inline gap="2" align="center">
+                          <Badge>{event.kind}</Badge>
+                          <strong>{event.title}</strong>
+                        </Inline>
                         <p>{event.detail}</p>
                       </Stack>
                       <time>{event.time}</time>
@@ -111,7 +114,11 @@ export function NotFoundPage() {
       <EmptyState
         title="Workspace page not found"
         description="The requested operations page does not exist."
-        action={<Button asChild variant="primary"><Link href="/">Return to the overview</Link></Button>}
+        action={
+          <Button asChild variant="primary">
+            <Link href="/">Return to the overview</Link>
+          </Button>
+        }
       />
     </OperationsLayout>
   );

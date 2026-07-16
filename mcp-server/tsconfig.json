@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "paths": {
+      "@askrjs/schema": ["../../askr-schema/dist/index.d.ts"],
+      "@askrjs/node": ["../../askr-node/dist/index.d.ts"],
+      "@askrjs/node/mcp": ["../../askr-node/dist/mcp.d.ts"],
+      "@askrjs/server": ["../../askr-server/dist/index.d.ts"],
+      "@askrjs/server/router": ["../../askr-server/dist/router.d.ts"],
+      "@askrjs/server/mcp": ["../../askr-server/dist/mcp.d.ts"]
+    },
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"]
+}

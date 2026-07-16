@@ -1,4 +1,4 @@
-import { createInMemoryUserRepository, type UserRepository } from '../domains/users/repository.js';
+import { createInMemoryUserRepository, type UserRepository } from "../domains/users/repository.js";
 
 export interface ApplicationLogger {
   write(entry: { method: string; path: string; status: number; requestId?: string }): void;
