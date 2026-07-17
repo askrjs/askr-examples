@@ -16,13 +16,13 @@
     "check": "npm run lint && npm run typecheck && npm test && npm run openapi:check"
   },
   "dependencies": {
-    "@askrjs/auth": "file:../../askr-auth",
-    "@askrjs/node": "file:../../askr-node",
-    "@askrjs/schema": "file:../../askr-schema",
-    "@askrjs/server": "file:../../askr-server"
+    "@askrjs/auth": ">=0.0.1 <0.1.0",
+    "@askrjs/node": ">=0.0.1 <0.1.0",
+    "@askrjs/schema": ">=0.0.1 <0.1.0",
+    "@askrjs/server": ">=0.0.1 <0.1.0"
   },
   "devDependencies": {
-    "@askrjs/cli": "file:../../askr-cli",
+    "@askrjs/cli": ">=0.0.2 <0.1.0",
     "tsx": "^4.23.0",
     "typescript": "^6.0.0",
     "vite-plus": "^0.2.4",

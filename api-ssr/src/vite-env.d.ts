@@ -1,2 +1,2 @@
 declare module "*.css";
-declare module "@askrjs/charts/default";
+declare module "@askrjs/charts/styles";

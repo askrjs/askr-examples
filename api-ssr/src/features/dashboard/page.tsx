@@ -1,4 +1,4 @@
-import { LineChart } from "@askrjs/charts/components";
+import { createPlot } from "@askrjs/charts";
 import {
   Card,
   CardContent,
@@ -14,6 +14,10 @@ import {
 import type { Dashboard } from "../../domains/dashboard/repository.js";
 import { dashboardData } from "../../domains/queries.js";
 import { QueryError } from "../shared/query-error.js";
+
+type ActiveUsersRow = Dashboard["trend"][number];
+
+const ActiveUsersPlot = createPlot<ActiveUsersRow>();
 
 export function DashboardPage() {
   const dashboard = dashboardData();
@@ -49,7 +53,15 @@ function DashboardContent({ dashboard }: { dashboard: Dashboard }) {
           <CardTitle>Active users this week</CardTitle>
         </CardHeader>
         <CardContent>
-          <LineChart label="Active users this week" data={dashboard.trend} showGrid />
+          <ActiveUsersPlot.Root
+            data={dashboard.trend}
+            rowKey="label"
+            label="Active users this week"
+            description="Daily active users from Monday through Friday."
+          >
+            <ActiveUsersPlot.Line x="label" y="value" />
+            <ActiveUsersPlot.Point x="label" y="value" />
+          </ActiveUsersPlot.Root>
         </CardContent>
       </Card>
     </>

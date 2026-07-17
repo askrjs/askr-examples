@@ -13,9 +13,9 @@
     "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
-    "@askrjs/node": "file:../../askr-node",
-    "@askrjs/schema": "file:../../askr-schema",
-    "@askrjs/server": "file:../../askr-server"
+    "@askrjs/node": ">=0.0.1 <0.1.0",
+    "@askrjs/schema": ">=0.0.1 <0.1.0",
+    "@askrjs/server": ">=0.0.1 <0.1.0"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",

@@ -1,7 +1,7 @@
 import { createSPA, hydrateSPA } from "@askrjs/askr/boot";
 import { pageRegistry } from "./application/routes.js";
 import "./styles.css";
-import "@askrjs/charts/default";
+import "@askrjs/charts/styles";
 
 const root = document.getElementById("app");
 if (!root) throw new Error("Missing #app root element.");
