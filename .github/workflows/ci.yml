@@ -16,7 +16,7 @@ jobs:
   ci:
     name: CI (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -39,7 +39,7 @@ jobs:
         run: npx playwright install chromium
 
       - name: Format check
-        run: npm run fmt -- --check
+        run: npm run fmt --workspaces --if-present -- --check
 
       - name: Lint
         run: npm run lint
@@ -48,13 +48,4 @@ jobs:
         run: npm run build
 
       - name: Test
-        run: npm test
-
-      - name: Type checks
-        run: npm run typecheck
-
-      - name: Run journey tests
-        run: npm run test:journey
-
-      - name: Run browser acceptance
-        run: npm run test:browser
+        run: npm test && npm run typecheck && npm run test:journey && npm run openapi:check && npm run test:browser
