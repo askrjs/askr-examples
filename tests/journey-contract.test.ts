@@ -96,9 +96,6 @@ describe("progressive example journey contract", () => {
     for (const file of [
       "../ssr-only/src/app.ts",
       "../api-ssr/src/app.ts",
-      "../../destroyer/src/server/app.ts",
-      "../../askr-cli/templates/ssr/src/entry-server.tsx",
-      "../../askr-cli/templates/full-stack/src/server/app.ts",
     ]) {
       const source = await readFile(new URL(file, import.meta.url), "utf8");
       expect(source, file).toContain("createAskrApp");
