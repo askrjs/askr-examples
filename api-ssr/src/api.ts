@@ -1,5 +1,5 @@
 import { schema } from "@askrjs/schema";
-import { security } from "@askrjs/server/openapi";
+import { createApi, security } from "@askrjs/server/openapi";
 import type { AskrAppApi } from "@askrjs/server/askr";
 import type { AppDependencies } from "./boot/dependencies.js";
 import { SESSION_COOKIE } from "./domains/sessions/repository.js";
@@ -11,7 +11,7 @@ export const apiSecuritySchemes = {
   }),
 };
 
-export function defineApi(api: AskrAppApi<AppDependencies>) {
+function configureApi(api: AskrAppApi<AppDependencies>) {
   const User = api.schema(
     "User",
     schema.object({
@@ -77,3 +77,24 @@ export function defineApi(api: AskrAppApi<AppDependencies>) {
   // Register additional API route groups beside this one.
   registerApiRoutes(api, { Activity, AuthContext, Dashboard, Policy, User });
 }
+
+export function defineApi(api: AskrAppApi<AppDependencies>) {
+  configureApi(api);
+}
+
+// Keep the OpenAPI entrypoint independent from application boot dependencies.
+// The same route/schema composition is mounted under /api by createAskrApp.
+const openApi = createApi<AppDependencies>({
+  info: {
+    title: "Northstar Operations API and SSR",
+    version: "1.0.0",
+    description: "Authenticated APIs served alongside the Northstar operations workspace.",
+    license: { name: "Apache 2.0", identifier: "Apache-2.0" },
+  },
+  servers: [{ url: "http://127.0.0.1:3002", description: "Local development" }],
+  securitySchemes: apiSecuritySchemes,
+});
+const openApiGroup = Object.assign(openApi.group("/api"), { schema: openApi.schema });
+configureApi(openApiGroup as AskrAppApi<AppDependencies>);
+
+export default openApi;
