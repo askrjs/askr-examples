@@ -25,7 +25,7 @@
   "devDependencies": {
     "@askrjs/cli": ">=0.0.2 <0.1.0",
     "@askrjs/vite": ">=0.0.5 <0.1.0",
-    "typescript": "^7.0.2",
+    "typescript": "^6.0.0",
     "vite": "^8.0.0",
     "vite-plus": "^0.2.4",
     "vitest": "^4.0.0"
