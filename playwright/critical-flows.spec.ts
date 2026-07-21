@@ -69,6 +69,7 @@ test('SSR sends application HTML, hydrates it in place, and navigates on the cli
 
   await page.getByRole('link', { name: 'Activity' }).click();
   await expect(page).toHaveURL('http://127.0.0.1:3001/activity');
+  await page.waitForTimeout(250);
   await page.getByRole('button', { name: 'policy' }).click();
   await expect(page.getByTestId('activity-list').getByRole('listitem')).toHaveCount(1);
 });
@@ -92,6 +93,7 @@ test('authenticated SSR data, mutations, theme persistence, and Monaco policy sa
 
   await page.getByRole('link', { name: 'Users' }).click();
   await page.getByRole('link', { name: 'View user' }).first().click();
+  await page.waitForTimeout(250);
   const editUser = page.getByRole('button', { name: 'Edit user' });
   await editUser.focus();
   await editUser.press('Enter');
