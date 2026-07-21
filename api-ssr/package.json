@@ -30,13 +30,13 @@
     "@askrjs/themes": ">=0.0.11 <0.1.0",
     "@askrjs/ui": ">=0.0.12 <0.1.0",
     "@opentelemetry/api": "^1.9.0",
-    "monaco-editor": "^0.55.1"
+    "monaco-editor": "^0.56.0"
   },
   "devDependencies": {
     "@askrjs/cli": ">=0.0.2 <0.1.0",
     "@askrjs/vite": ">=0.0.5 <0.1.0",
     "tsx": "^4.23.0",
-    "typescript": "^6.0.0",
+    "typescript": "^7.0.2",
     "vite": "^8.0.0",
     "vite-plus": "^0.2.4",
     "vitest": "^4.0.0"
