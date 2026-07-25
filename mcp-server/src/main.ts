@@ -22,7 +22,7 @@ if (process.argv.includes("--stdio")) {
     stateful: process.argv.includes("--stateful"),
     allowedOrigins: [process.env.MCP_ORIGIN ?? `http://127.0.0.1:${port}`],
     allowedHosts: [process.env.HOST_HEADER ?? `127.0.0.1:${port}`],
-    resource: process.env.MCP_RESOURCE ?? "http://127.0.0.1:3000/mcp",
+    resource: process.env.MCP_RESOURCE ?? `http://127.0.0.1:${port}/mcp`,
   });
   const server = await listen(createServerApp(router), { port, host: "127.0.0.1" });
   const shutdown = () => server.close();
