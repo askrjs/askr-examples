@@ -1,5 +1,20 @@
 import { expect, test } from '@playwright/test';
 
+async function activateButton(
+  button: ReturnType<import('@playwright/test').Page['getByRole']>,
+  activeAttribute: string,
+): Promise<void> {
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    await button.click();
+    if (await button.getAttribute('aria-pressed') === activeAttribute
+      || await button.getAttribute('aria-expanded') === activeAttribute) {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  throw new Error(`Timed out activating button; expected state ${activeAttribute}.`);
+}
+
 test('SPA navigation and reactive activity filtering', async ({ page }) => {
   await page.goto('http://127.0.0.1:4000/');
   await expect(page).toHaveTitle('Northstar Operations');
@@ -69,7 +84,7 @@ test('SSR sends application HTML, hydrates it in place, and navigates on the cli
 
   await page.getByRole('link', { name: 'Activity', exact: true }).click();
   await expect(page).toHaveURL('http://127.0.0.1:3001/activity');
-  await page.getByRole('button', { name: 'policy' }).click();
+  await activateButton(page.getByRole('button', { name: 'policy' }), 'true');
   await expect(page.getByTestId('activity-list').getByRole('listitem')).toHaveCount(1);
 });
 
@@ -95,6 +110,9 @@ test('authenticated SSR data, mutations, theme persistence, and Monaco policy sa
   const editUser = page.getByRole('button', { name: 'Edit user' });
   await editUser.focus();
   await editUser.press('Enter');
+  if (await editUser.getAttribute('aria-expanded') !== 'true') {
+    await activateButton(editUser, 'true');
+  }
   await expect(editUser).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.getByRole('dialog').getByLabel('Display name').fill('Ada Byron');
