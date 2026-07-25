@@ -15,10 +15,6 @@ export function createActionHandlers() {
           user.version,
         );
         return {
-          redirect:
-            result.kind === "updated"
-              ? `/workspace/users/${encodeURIComponent(result.user.id)}`
-              : "/workspace/users",
           result: result.kind === "updated" ? result.user : undefined,
         };
       },
