@@ -5,7 +5,7 @@ test('SPA navigation and reactive activity filtering', async ({ page }) => {
   await expect(page).toHaveTitle('Northstar Operations');
   await expect(page.getByRole('heading', { name: 'Everything is running smoothly.' })).toBeVisible();
 
-  await page.getByRole('link', { name: 'Activity' }).click();
+  await page.getByRole('link', { name: 'Activity', exact: true }).click();
   await expect(page).toHaveURL('http://127.0.0.1:4000/activity');
   await expect(page).toHaveTitle('Activity · Northstar Operations');
   await expect(page.getByTestId('activity-list').getByRole('listitem')).toHaveCount(4);
@@ -67,7 +67,7 @@ test('SSR sends application HTML, hydrates it in place, and navigates on the cli
     return state.__northstarServerNode === document.querySelector('#app > *');
   })).toBe(true);
 
-  await page.getByRole('link', { name: 'Activity' }).click();
+  await page.getByRole('link', { name: 'Activity', exact: true }).click();
   await expect(page).toHaveURL('http://127.0.0.1:3001/activity');
   await page.getByRole('button', { name: 'policy' }).click();
   await expect(page.getByTestId('activity-list').getByRole('listitem')).toHaveCount(1);
