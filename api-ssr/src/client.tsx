@@ -12,3 +12,5 @@ if (root.hasChildNodes()) {
 } else {
   await createSPA({ root, registry: pageRegistry });
 }
+
+root.dataset.askrReady = "true";
