@@ -1,4 +1,8 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function expectAskrReady(page: Page) {
+  await expect(page.locator('#app')).toHaveAttribute('data-askr-ready', 'true');
+}
 
 test('SPA navigation and reactive activity filtering', async ({ page }) => {
   await page.goto('http://127.0.0.1:4000/');
@@ -43,7 +47,6 @@ test('native keyboard action submission replays 422 fields without JavaScript', 
 });
 
 test('SSR sends application HTML, hydrates it in place, and navigates on the client', async ({ page, request }) => {
-  test.skip(process.platform === 'win32', 'Tracked in askrjs/askr#82: SSR navigation hydration is not attaching handlers on Windows CI.');
   const response = await request.get('http://127.0.0.1:3001/activity');
   const html = await response.text();
   expect(response.ok()).toBe(true);
@@ -62,6 +65,7 @@ test('SSR sends application HTML, hydrates it in place, and navigates on the cli
     });
   });
   await page.goto('http://127.0.0.1:3001/');
+  await expectAskrReady(page);
   await expect(page.getByRole('heading', { name: 'Everything is running smoothly.' })).toBeVisible();
   expect(await page.evaluate(() => {
     const state = window as Window & { __northstarServerNode?: Element };
@@ -70,24 +74,27 @@ test('SSR sends application HTML, hydrates it in place, and navigates on the cli
 
   await page.getByRole('link', { name: 'Activity', exact: true }).click();
   await expect(page).toHaveURL('http://127.0.0.1:3001/activity');
+  await expectAskrReady(page);
   await page.getByRole('button', { name: 'policy' }).click();
   await expect(page.getByTestId('activity-list').getByRole('listitem')).toHaveCount(1);
 });
 
 test('authenticated SSR data, mutations, theme persistence, and Monaco policy save', async ({ page }) => {
-  test.skip(process.platform === 'win32', 'Tracked in askrjs/askr#82: SSR navigation hydration is not attaching handlers on Windows CI.');
   const pageErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.goto('http://127.0.0.1:3002/workspace');
   await expect(page).toHaveURL(/\/login\?next=/);
+  await expectAskrReady(page);
   await page.getByRole('button', { name: 'Sign in as Demo Operator' }).click();
   await expect(page.getByRole('heading', { name: 'Operations dashboard' })).toBeVisible();
+  await expectAskrReady(page);
 
   let dashboardRequests = 0;
   page.on('request', (request) => {
     if (new URL(request.url()).pathname === '/api/dashboard') dashboardRequests += 1;
   });
   await page.goto('http://127.0.0.1:3002/workspace');
+  await expectAskrReady(page);
   await expect(page.getByRole('heading', { name: 'Operations dashboard' })).toBeVisible();
   await expect(page.getByText('Loading dashboard…')).toHaveCount(0);
   expect(dashboardRequests).toBe(0);
