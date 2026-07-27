@@ -102,4 +102,17 @@ describe("progressive example journey contract", () => {
       expect(source, file).not.toMatch(/createServerApp|createAskrPageHandler/);
     }
   });
+
+  it("should convert asset file URLs to native paths on every Node server entry", async () => {
+    for (const file of [
+      "../ssr-only/serve.mjs",
+      "../ssr-only/src/server.ts",
+      "../api-ssr/serve.mjs",
+      "../api-ssr/src/server.ts",
+    ]) {
+      const source = await readFile(new URL(file, import.meta.url), "utf8");
+      expect(source, file).toContain("fileURLToPath");
+      expect(source, file).not.toMatch(/new URL\([^)]*dist[^)]*\)\.pathname/);
+    }
+  });
 });
