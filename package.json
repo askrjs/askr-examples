@@ -19,6 +19,9 @@
     "check": "npm run lint && npm run typecheck && npm test && npm run test:journey && npm run openapi:check",
     "acceptance": "npm run check && npm run build && npm run test:browser"
   },
+  "overrides": {
+    "dompurify": "3.4.12"
+  },
   "devDependencies": {
     "@askrjs/schema": ">=0.0.2 <0.1.0",
     "@types/node": "^26.0.0",
