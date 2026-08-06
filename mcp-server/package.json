@@ -13,16 +13,17 @@
     "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
-    "@askrjs/node": ">=0.0.1 <0.1.0",
-    "@askrjs/schema": ">=0.0.1 <0.1.0",
-    "@askrjs/server": ">=0.0.1 <0.1.0"
+    "@askrjs/node": ">=0.0.8 <0.1.0",
+    "@askrjs/schema": ">=0.0.5 <0.1.0",
+    "@askrjs/server": ">=0.0.11 <0.1.0"
   },
   "devDependencies": {
-    "@types/node": "^26.0.0",
-    "tsx": "^4.23.0",
+    "@types/node": "^26.1.2",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.23.9",
     "typescript": "^7.0.2",
-    "vite-plus": "^0.2.4",
-    "vitest": "^4.0.0"
+    "vite-plus": "^0.2.8",
+    "vitest": "^4.1.10"
   },
   "engines": {
     "node": ">=24.0.0"

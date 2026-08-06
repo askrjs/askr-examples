@@ -17,26 +17,26 @@ paths:
       summary: List workspace activity
       operationId: listActivity
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/Activity"
+                  $ref: '#/components/schemas/Activity'
                 type: array
-        "401":
+        '401':
           description: Unauthorized
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "403":
+                $ref: '#/components/schemas/Problem'
+        '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                $ref: '#/components/schemas/Problem'
       security:
         - cookieSession: []
   /api/dashboard:
@@ -46,24 +46,24 @@ paths:
       summary: Get workspace dashboard data
       operationId: getDashboard
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Dashboard"
-        "401":
+                $ref: '#/components/schemas/Dashboard'
+        '401':
           description: Unauthorized
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "403":
+                $ref: '#/components/schemas/Problem'
+        '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                $ref: '#/components/schemas/Problem'
       security:
         - cookieSession: []
   /api/health:
@@ -73,7 +73,7 @@ paths:
       summary: Get API health
       operationId: getHealth
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
@@ -101,30 +101,30 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Policy"
-        "401":
+                $ref: '#/components/schemas/Policy'
+        '401':
           description: Unauthorized
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "403":
+                $ref: '#/components/schemas/Problem'
+        '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
+                $ref: '#/components/schemas/Problem'
+        '404':
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                $ref: '#/components/schemas/Problem'
       security:
         - cookieSession: []
     put:
@@ -158,43 +158,43 @@ paths:
                 - source
               type: object
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Policy"
-        "400":
+                $ref: '#/components/schemas/Policy'
+        '400':
           description: Bad Request
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "401":
+                $ref: '#/components/schemas/Problem'
+        '401':
           description: Unauthorized
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "403":
+                $ref: '#/components/schemas/Problem'
+        '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
+                $ref: '#/components/schemas/Problem'
+        '404':
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "409":
+                $ref: '#/components/schemas/Problem'
+        '409':
           description: Conflict
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "428":
+                $ref: '#/components/schemas/Problem'
+        '428':
           description: Precondition Required
           content:
             application/problem+json:
@@ -227,12 +227,12 @@ paths:
       summary: Get the current demo session
       operationId: getSession
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthContext"
+                $ref: '#/components/schemas/AuthContext'
     post:
       tags:
         - Session
@@ -244,7 +244,7 @@ paths:
           schema:
             type: string
       responses:
-        "201":
+        '201':
           description: Created
           content:
             application/json:
@@ -256,14 +256,14 @@ paths:
                 required:
                   - authenticated
                 type: object
-        "303":
+        '303':
           description: See Other
-        "403":
+        '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                $ref: '#/components/schemas/Problem'
       security: []
     delete:
       tags:
@@ -271,20 +271,20 @@ paths:
       summary: Delete the current demo session
       operationId: deleteSession
       responses:
-        "204":
+        '204':
           description: No Content
-        "401":
+        '401':
           description: Unauthorized
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "403":
+                $ref: '#/components/schemas/Problem'
+        '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                $ref: '#/components/schemas/Problem'
       security:
         - cookieSession: []
   /api/users:
@@ -294,26 +294,26 @@ paths:
       summary: List users
       operationId: listUsers
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 items:
-                  $ref: "#/components/schemas/User"
+                  $ref: '#/components/schemas/User'
                 type: array
-        "401":
+        '401':
           description: Unauthorized
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "403":
+                $ref: '#/components/schemas/Problem'
+        '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                $ref: '#/components/schemas/Problem'
       security:
         - cookieSession: []
   /api/users/{id}:
@@ -329,30 +329,30 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        "401":
+                $ref: '#/components/schemas/User'
+        '401':
           description: Unauthorized
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "403":
+                $ref: '#/components/schemas/Problem'
+        '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
+                $ref: '#/components/schemas/Problem'
+        '404':
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                $ref: '#/components/schemas/Problem'
       security:
         - cookieSession: []
     patch:
@@ -391,43 +391,43 @@ paths:
                     - viewer
               type: object
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        "400":
+                $ref: '#/components/schemas/User'
+        '400':
           description: Bad Request
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "401":
+                $ref: '#/components/schemas/Problem'
+        '401':
           description: Unauthorized
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "403":
+                $ref: '#/components/schemas/Problem'
+        '403':
           description: Forbidden
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "404":
+                $ref: '#/components/schemas/Problem'
+        '404':
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "409":
+                $ref: '#/components/schemas/Problem'
+        '409':
           description: Conflict
           content:
             application/problem+json:
               schema:
-                $ref: "#/components/schemas/Problem"
-        "428":
+                $ref: '#/components/schemas/Problem'
+        '428':
           description: Precondition Required
           content:
             application/problem+json:
@@ -485,16 +485,16 @@ components:
           type: boolean
         principal:
           anyOf:
-            - $ref: "#/components/schemas/Principal"
-            - type: "null"
+            - $ref: '#/components/schemas/Principal'
+            - type: 'null'
         session:
           anyOf:
-            - $ref: "#/components/schemas/Session"
-            - type: "null"
+            - $ref: '#/components/schemas/Session'
+            - type: 'null'
         tenant:
           anyOf:
             - type: string
-            - type: "null"
+            - type: 'null'
       required:
         - authenticated
         - principal
