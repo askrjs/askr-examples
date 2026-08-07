@@ -17,7 +17,7 @@ paths:
       summary: Get API health
       operationId: getHealth
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -39,13 +39,13 @@ paths:
       summary: List users
       operationId: listUsers
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: "#/components/schemas/User"
                 type: array
   /api/users/{id}:
     get:
@@ -60,7 +60,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           headers:
             ETag:
@@ -70,13 +70,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
+                $ref: "#/components/schemas/User"
+        "404":
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
+                $ref: "#/components/schemas/Problem"
     patch:
       tags:
         - Users
@@ -113,31 +113,31 @@ paths:
                     - viewer
               type: object
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '400':
+                $ref: "#/components/schemas/User"
+        "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-        '404':
+                $ref: "#/components/schemas/Problem"
+        "404":
           description: Not Found
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-        '409':
+                $ref: "#/components/schemas/Problem"
+        "409":
           description: Conflict
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/Problem'
-        '428':
+                $ref: "#/components/schemas/Problem"
+        "428":
           description: Precondition Required
           content:
             application/problem+json:
