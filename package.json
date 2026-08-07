@@ -23,15 +23,16 @@
     "dompurify": "3.4.12"
   },
   "devDependencies": {
-    "@askrjs/schema": ">=0.0.2 <0.1.0",
-    "@types/node": "^26.0.0",
-    "@playwright/test": "^1.61.1",
-    "jsdom": "^29.1.1",
-    "playwright": "^1.61.1",
-    "tsx": "^4.23.0",
-    "typescript": "^6.0.0",
-    "vite-plus": "^0.2.4",
-    "vitest": "^4.0.0"
+    "@askrjs/schema": ">=0.0.5 <0.1.0",
+    "@types/node": "^26.1.2",
+    "@playwright/test": "^1.62.1",
+    "jsdom": "^30.0.1",
+    "monaco-editor": "^0.56.0",
+    "playwright": "^1.62.1",
+    "tsx": "^4.23.9",
+    "typescript": "^7.0.2",
+    "vite-plus": "^0.2.8",
+    "vitest": "^4.1.10"
   },
   "engines": { "node": ">=24.0.0" },
   "packageManager": "npm@12.0.1"

@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { createStaticGen } from "@askrjs/askr/ssg";
+import { withThemeStyles } from "@askrjs/themes/ssr";
 import { pageRegistry } from "../src/routes.js";
 import { renderDocument } from "../src/document.js";
 
@@ -19,7 +20,8 @@ describe("SSG runbook reference", () => {
       registry: pageRegistry,
       outputDir,
       seed: 20260714,
-      document: renderDocument,
+      document: withThemeStyles(renderDocument),
+      styleRegistrationValidation: "error",
       concurrency: 1,
     }).generate();
 
@@ -34,6 +36,7 @@ describe("SSG runbook reference", () => {
     expect(html).toContain("API recovery");
     expect(html).toContain("Acknowledge this runbook");
     expect(html).toContain('<meta name="generator" content="Askr SSG" />');
+    expect(html).toContain('data-askr-style-registry="true"');
     const metadata = JSON.parse(await readFile(join(outputDir, "metadata.json"), "utf8")) as {
       totalRoutes: number;
       successful: number;

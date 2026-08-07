@@ -1,3 +1,4 @@
+import "./monaco-workers.js";
 import { createSPA, hydrateSPA } from "@askrjs/askr/boot";
 import { pageRegistry } from "./application/routes.js";
 import "./styles.css";
