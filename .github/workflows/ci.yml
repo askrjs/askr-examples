@@ -3,7 +3,7 @@ name: CI
 on:
   workflow_dispatch:
   schedule:
-    - cron: '15 3 * * *'
+    - cron: "15 3 * * *"
   push:
     branches: [main]
   pull_request:
@@ -29,7 +29,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
           cache: npm
 
       - name: Install dependencies

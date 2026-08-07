@@ -93,10 +93,7 @@ describe("progressive example journey contract", () => {
   });
 
   it("should keep common-path server entries on the application composer", async () => {
-    for (const file of [
-      "../ssr-only/src/app.ts",
-      "../api-ssr/src/app.ts",
-    ]) {
+    for (const file of ["../ssr-only/src/app.ts", "../api-ssr/src/app.ts"]) {
       const source = await readFile(new URL(file, import.meta.url), "utf8");
       expect(source, file).toContain("createAskrApp");
       expect(source, file).not.toMatch(/createServerApp|createAskrPageHandler/);

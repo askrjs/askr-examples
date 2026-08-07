@@ -10,10 +10,10 @@ These independently runnable applications form one progressive Northstar operati
 
 The application UI leans on `@askrjs/themes` for layout, navigation, cards, stats, forms, empty states, and persisted color mode. The small example stylesheets contain only global defaults and feature-specific sizing.
 
-| Stage | Routes and application UI carried forward | Files added at this stage |
-| --- | --- | --- |
-| SPA | `/`, `/activity`, `/*`; operations layout and deterministic activity | `application/*`, browser boot |
-| SSR | All SPA application modules and styles byte-for-byte | server app, Vite server entry, production entry, hydrate-or-create boot |
+| Stage      | Routes and application UI carried forward                                           | Files added at this stage                                                                                                         |
+| ---------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| SPA        | `/`, `/activity`, `/*`; operations layout and deterministic activity                | `application/*`, browser boot                                                                                                     |
+| SSR        | All SPA application modules and styles byte-for-byte                                | server app, Vite server entry, production entry, hydrate-or-create boot                                                           |
 | Full stack | SSR public data, layout, pages, and styles unchanged; public routes remain in place | protected workspace pages, schemas, actions, repositories, query registry, APIs, auth, metadata, i18n, telemetry, server prefetch |
 
 Install and run all repository gates from this directory:

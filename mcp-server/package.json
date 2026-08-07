@@ -18,9 +18,9 @@
     "@askrjs/server": ">=0.0.11 <0.1.0"
   },
   "devDependencies": {
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.2.0",
     "@types/ws": "^8.18.1",
-    "tsx": "^4.23.9",
+    "tsx": "^4.23.11",
     "typescript": "^7.0.2",
     "vite-plus": "^0.2.8",
     "vitest": "^4.1.10"
