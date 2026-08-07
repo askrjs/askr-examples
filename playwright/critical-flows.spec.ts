@@ -1,157 +1,173 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from "@playwright/test";
 
 async function expectAskrReady(page: Page) {
-  await expect(page.locator('#app')).toHaveAttribute('data-askr-ready', 'true');
+  await expect(page.locator("#app")).toHaveAttribute("data-askr-ready", "true");
 }
 
-test('SPA navigation and reactive activity filtering', async ({ page }) => {
-  await page.goto('http://127.0.0.1:4000/');
-  await expect(page).toHaveTitle('Northstar Operations');
-  await expect(page.getByRole('heading', { name: 'Everything is running smoothly.' })).toBeVisible();
+test("should ensure SPA navigation and reactive activity filtering", async ({ page }) => {
+  await page.goto("http://127.0.0.1:4000/");
+  await expect(page).toHaveTitle("Northstar Operations");
+  await expect(
+    page.getByRole("heading", { name: "Everything is running smoothly." }),
+  ).toBeVisible();
 
-  await page.getByRole('link', { name: 'Activity', exact: true }).click();
-  await expect(page).toHaveURL('http://127.0.0.1:4000/activity');
-  await expect(page).toHaveTitle('Activity · Northstar Operations');
-  await expect(page.getByTestId('activity-list').getByRole('listitem')).toHaveCount(4);
+  await page.getByRole("link", { name: "Activity", exact: true }).click();
+  await expect(page).toHaveURL("http://127.0.0.1:4000/activity");
+  await expect(page).toHaveTitle("Activity · Northstar Operations");
+  await expect(page.getByTestId("activity-list").getByRole("listitem")).toHaveCount(4);
 
-  await page.getByRole('button', { name: 'deployment' }).click();
-  await expect(page.getByTestId('activity-list').getByRole('listitem')).toHaveCount(2);
-  await expect(page.getByText('Production deployment completed')).toBeVisible();
-  await expect(page.getByText('Workspace member invited')).toHaveCount(0);
+  await page.getByRole("button", { name: "deployment" }).click();
+  await expect(page.getByTestId("activity-list").getByRole("listitem")).toHaveCount(2);
+  await expect(page.getByText("Production deployment completed")).toBeVisible();
+  await expect(page.getByText("Workspace member invited")).toHaveCount(0);
 });
 
-test('native keyboard action submission replays 422 fields without JavaScript', async ({ browser }) => {
+test("should ensure native keyboard action submission replays 422 fields without JavaScript", async ({
+  browser,
+}) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   try {
-    await page.goto('http://127.0.0.1:3002/workspace');
+    await page.goto("http://127.0.0.1:3002/workspace");
     await expect(page).toHaveURL(/\/login\?next=/);
-    await page.getByRole('button', { name: 'Sign in as Demo Operator' }).click();
-    await expect(page.getByRole('heading', { name: 'Operations dashboard' })).toBeVisible();
+    await page.getByRole("button", { name: "Sign in as Demo Operator" }).click();
+    await expect(page.getByRole("heading", { name: "Operations dashboard" })).toBeVisible();
 
-    await page.getByRole('link', { name: 'Users' }).click();
-    await page.getByRole('link', { name: 'View user' }).first().click();
-    const name = page.locator('#native-user-name');
-    await name.fill('x');
-    await name.press('Enter');
-    await expect(page.locator('noscript').getByRole('alert')).toContainText('Expected at least 2 characters.');
-    await expect(name).toHaveValue('x');
+    await page.getByRole("link", { name: "Users" }).click();
+    await page.getByRole("link", { name: "View user" }).first().click();
+    const name = page.locator("#native-user-name");
+    await name.fill("x");
+    await name.press("Enter");
+    await expect(page.locator("noscript").getByRole("alert")).toContainText(
+      "Expected at least 2 characters.",
+    );
+    await expect(name).toHaveValue("x");
 
-    await name.fill('Ada Native');
-    await name.press('Enter');
+    await name.fill("Ada Native");
+    await name.press("Enter");
     await expect(page).toHaveURL(/\/workspace\/users\/1$/);
-    await expect(page.getByRole('heading', { name: 'Ada Native' })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Ada Native" })).toBeVisible();
   } finally {
     await context.close();
   }
 });
 
-test('SSR sends application HTML, hydrates it in place, and navigates on the client', async ({ page, request }) => {
-  const response = await request.get('http://127.0.0.1:3001/activity');
+test("should ensure SSR sends application HTML, hydrates it in place, and navigates on the client", async ({
+  page,
+  request,
+}) => {
+  const response = await request.get("http://127.0.0.1:3001/activity");
   const html = await response.text();
   expect(response.ok()).toBe(true);
-  expect(html).toContain('Recent activity');
-  expect(html).toContain('Production deployment completed');
+  expect(html).toContain("Recent activity");
+  expect(html).toContain("Production deployment completed");
 
-  await page.route('http://127.0.0.1:3001/', async (route) => {
+  await page.route("http://127.0.0.1:3001/", async (route) => {
     const documentResponse = await route.fetch();
     const body = await documentResponse.text();
     await route.fulfill({
       response: documentResponse,
       body: body.replace(
-        '</body>',
+        "</body>",
         '<script>window.__northstarServerNode = document.querySelector("#app > *");</script></body>',
       ),
     });
   });
-  await page.goto('http://127.0.0.1:3001/');
+  await page.goto("http://127.0.0.1:3001/");
   await expectAskrReady(page);
-  await expect(page.getByRole('heading', { name: 'Everything is running smoothly.' })).toBeVisible();
-  expect(await page.evaluate(() => {
-    const state = window as Window & { __northstarServerNode?: Element };
-    return state.__northstarServerNode === document.querySelector('#app > *');
-  })).toBe(true);
+  await expect(
+    page.getByRole("heading", { name: "Everything is running smoothly." }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() => {
+      const state = window as Window & { __northstarServerNode?: Element };
+      return state.__northstarServerNode === document.querySelector("#app > *");
+    }),
+  ).toBe(true);
 
-  await page.getByRole('link', { name: 'Activity', exact: true }).click();
-  await expect(page).toHaveURL('http://127.0.0.1:3001/activity');
+  await page.getByRole("link", { name: "Activity", exact: true }).click();
+  await expect(page).toHaveURL("http://127.0.0.1:3001/activity");
   await expectAskrReady(page);
-  await page.getByRole('button', { name: 'policy' }).click();
-  await expect(page.getByTestId('activity-list').getByRole('listitem')).toHaveCount(1);
+  await page.getByRole("button", { name: "policy" }).click();
+  await expect(page.getByTestId("activity-list").getByRole("listitem")).toHaveCount(1);
 });
 
-test('authenticated SSR data, mutations, theme persistence, and Monaco policy save', async ({ page }) => {
+test("should ensure authenticated SSR data, mutations, theme persistence, and Monaco policy save", async ({
+  page,
+}) => {
   const pageErrors: string[] = [];
-  page.on('pageerror', (error) => pageErrors.push(error.message));
-  await page.goto('http://127.0.0.1:3002/workspace');
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+  await page.goto("http://127.0.0.1:3002/workspace");
   await expect(page).toHaveURL(/\/login\?next=/);
   await expectAskrReady(page);
-  await page.getByRole('button', { name: 'Sign in as Demo Operator' }).click();
-  await expect(page.getByRole('heading', { name: 'Operations dashboard' })).toBeVisible();
+  await page.getByRole("button", { name: "Sign in as Demo Operator" }).click();
+  await expect(page.getByRole("heading", { name: "Operations dashboard" })).toBeVisible();
   await expectAskrReady(page);
 
   let dashboardRequests = 0;
-  page.on('request', (request) => {
-    if (new URL(request.url()).pathname === '/api/dashboard') dashboardRequests += 1;
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname === "/api/dashboard") dashboardRequests += 1;
   });
-  await page.goto('http://127.0.0.1:3002/workspace');
+  await page.goto("http://127.0.0.1:3002/workspace");
   await expectAskrReady(page);
-  await expect(page.getByRole('heading', { name: 'Operations dashboard' })).toBeVisible();
-  await expect(page.getByText('Loading dashboard…')).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Operations dashboard" })).toBeVisible();
+  await expect(page.getByText("Loading dashboard…")).toHaveCount(0);
   expect(dashboardRequests).toBe(0);
 
-  await page.getByRole('link', { name: 'Users' }).click();
-  await page.getByRole('link', { name: 'View user' }).first().click();
-  const editUser = page.getByRole('button', { name: 'Edit user' });
+  await page.getByRole("link", { name: "Users" }).click();
+  await page.getByRole("link", { name: "View user" }).first().click();
+  const editUser = page.getByRole("button", { name: "Edit user" });
   await editUser.focus();
-  await editUser.press('Enter');
-  await expect(editUser).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.getByRole('dialog')).toBeVisible();
-  await page.getByRole('dialog').getByLabel('Display name').fill('Ada Byron');
-  const actionResponse = page.waitForResponse((response) =>
-    response.request().method() === 'POST'
-      && response.request().headers().accept?.startsWith('application/vnd.askr.action+json'),
+  await editUser.press("Enter");
+  await expect(editUser).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.getByRole("dialog").getByLabel("Display name").fill("Ada Byron");
+  const actionResponse = page.waitForResponse(
+    (response) =>
+      response.request().method() === "POST" &&
+      response.request().headers().accept?.startsWith("application/vnd.askr.action+json"),
   );
-  await page.getByRole('button', { name: 'Save user' }).click();
+  await page.getByRole("button", { name: "Save user" }).click();
   expect((await actionResponse).status()).toBe(200);
-  await expect(page.getByRole('status')).toHaveText('User saved.');
-  await page.getByRole('button', { name: 'Cancel' }).click();
-  await page.getByRole('link', { name: 'Users' }).click();
-  await expect(page.getByText('Ada Byron')).toBeVisible();
+  await expect(page.getByRole("status")).toHaveText("User saved.");
+  await page.getByRole("button", { name: "Cancel" }).click();
+  await page.getByRole("link", { name: "Users" }).click();
+  await expect(page.getByText("Ada Byron")).toBeVisible();
 
-  const themeToggle = page.getByRole('button', { name: 'Toggle color theme' });
+  const themeToggle = page.getByRole("button", { name: "Toggle color theme" });
   await themeToggle.click();
-  const storedTheme = await page.evaluate(() => localStorage.getItem('askr-examples-theme'));
+  const storedTheme = await page.evaluate(() => localStorage.getItem("askr-examples-theme"));
   expect(storedTheme).toMatch(/^(light|dark)$/);
   await page.reload();
-  await expect(page.locator('html')).toHaveAttribute('data-theme-choice', storedTheme!);
+  await expect(page.locator("html")).toHaveAttribute("data-theme-choice", storedTheme!);
 
-  await page.getByRole('link', { name: 'Language' }).click();
-  await page.getByLabel('Workspace language').selectOption('es');
-  await expect(page.getByRole('heading', { name: 'Idioma y región' })).toBeVisible();
-  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await page.getByRole("link", { name: "Language" }).click();
+  await page.getByLabel("Workspace language").selectOption("es");
+  await expect(page.getByRole("heading", { name: "Idioma y región" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
   await expect(page.locator('[data-catalog="es"]')).toBeVisible();
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'Idioma y región' })).toBeVisible();
-  await expect(page.getByLabel('Idioma del espacio de trabajo')).toHaveValue('es');
+  await expect(page.getByRole("heading", { name: "Idioma y región" })).toBeVisible();
+  await expect(page.getByLabel("Idioma del espacio de trabajo")).toHaveValue("es");
 
-  await page.getByRole('link', { name: 'Deferred data' }).evaluate((link) =>
-    (link as HTMLAnchorElement).click(),
-  );
+  await page
+    .getByRole("link", { name: "Deferred data" })
+    .evaluate((link) => (link as HTMLAnchorElement).click());
   await expect(page).toHaveURL(/\/workspace\/deferred$/);
-  await expect(page.getByText('Loading deferred result…')).toBeVisible();
-  await expect(page.getByText('Deferred workspace data is ready.')).toBeVisible();
+  await expect(page.getByText("Loading deferred result…")).toBeVisible();
+  await expect(page.getByText("Deferred workspace data is ready.")).toBeVisible();
 
-  await page.getByRole('link', { name: 'Deferred failure' }).evaluate((link) =>
-    (link as HTMLAnchorElement).click(),
-  );
+  await page
+    .getByRole("link", { name: "Deferred failure" })
+    .evaluate((link) => (link as HTMLAnchorElement).click());
   await expect(page).toHaveURL(/\/workspace\/deferred-failure$/);
-  await expect(page.getByText('Loading rejected result…')).toBeVisible();
-  await expect(page.getByRole('alert')).toContainText('demo rejection');
+  await expect(page.getByText("Loading rejected result…")).toBeVisible();
+  await expect(page.getByRole("alert")).toContainText("demo rejection");
 
-  await page.getByRole('link', { name: 'Policies' }).click();
-  await expect(page.getByRole('heading', { name: 'Support escalation' })).toBeVisible();
-  await expect(page.getByLabel('Policy source')).toBeVisible();
-  await page.getByRole('button', { name: 'Save policy' }).click();
-  await expect(page.getByRole('status')).toHaveText('Policy saved.');
+  await page.getByRole("link", { name: "Policies" }).click();
+  await expect(page.getByRole("heading", { name: "Support escalation" })).toBeVisible();
+  await expect(page.getByLabel("Policy source")).toBeVisible();
+  await page.getByRole("button", { name: "Save policy" }).click();
+  await expect(page.getByRole("status")).toHaveText("Policy saved.");
   expect(pageErrors).toEqual([]);
 });

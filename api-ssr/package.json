@@ -17,7 +17,7 @@
     "check": "npm run lint && npm run typecheck && npm test && npm run openapi:check"
   },
   "dependencies": {
-    "@askrjs/askr": ">=0.0.87 <0.1.0",
+    "@askrjs/askr": ">=0.0.88 <0.1.0",
     "@askrjs/auth": ">=0.0.8 <0.1.0",
     "@askrjs/charts": ">=0.1.5 <0.2.0",
     "@askrjs/i18n": ">=0.0.3 <0.1.0",
@@ -27,15 +27,15 @@
     "@askrjs/otel": ">=0.0.4 <0.1.0",
     "@askrjs/schema": ">=0.0.5 <0.1.0",
     "@askrjs/server": ">=0.0.11 <0.1.0",
-    "@askrjs/themes": ">=0.0.22 <0.1.0",
-    "@askrjs/ui": ">=0.0.25 <0.1.0",
+    "@askrjs/themes": ">=0.0.23 <0.1.0",
+    "@askrjs/ui": ">=0.0.26 <0.1.0",
     "@opentelemetry/api": "^1.9.1",
     "monaco-editor": "^0.56.0"
   },
   "devDependencies": {
     "@askrjs/cli": ">=0.0.21 <0.1.0",
     "@askrjs/vite": ">=0.0.12 <0.1.0",
-    "tsx": "^4.23.9",
+    "tsx": "^4.23.11",
     "typescript": "^7.0.2",
     "vite": "^8.2.1",
     "vite-plus": "^0.2.8",
