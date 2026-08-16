@@ -157,9 +157,9 @@ paths:
                   type:
                     type: string
                 required:
-                  - type
-                  - title
                   - status
+                  - title
+                  - type
                 type: object
 components:
   schemas:
@@ -206,9 +206,9 @@ components:
           minimum: 1
           type: integer
       required:
+        - email
         - id
         - name
-        - email
         - role
         - version
       type: object
