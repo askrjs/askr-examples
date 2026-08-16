@@ -27,7 +27,8 @@
     "acceptance": "npm run check && npm run build && npm run test:browser"
   },
   "devDependencies": {
-    "@askrjs/schema": ">=0.0.6 <0.1.0",
+    "@askrjs/askr": ">=0.2.0 <0.3.0",
+    "@askrjs/schema": ">=0.2.0 <0.3.0",
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.2.0",
     "jsdom": "^30.0.1",
