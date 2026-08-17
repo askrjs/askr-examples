@@ -16,7 +16,7 @@ export function OperationsLayout({ children }: { children?: unknown }) {
   return (
     <ThemeScope storageKey="askr-examples-theme">
       <Header position="sticky">
-        <Container size="xl" py="lg">
+        <Container size="xl" paddingY="lg">
           <Navbar>
             <NavBrand>
               <NavLink href="/" match="exact" aria-label="Northstar operations home">
@@ -42,7 +42,7 @@ export function OperationsLayout({ children }: { children?: unknown }) {
         </Container>
       </Header>
       <Main>
-        <Container size="xl" py="2xl">
+        <Container size="xl" paddingY="2xl">
           <Stack gap="2xl">{children}</Stack>
         </Container>
       </Main>

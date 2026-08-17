@@ -11,6 +11,20 @@ import basicApi from "../api-only/src/api.js";
 const basePaths = ["/", "/activity", "/*"];
 
 describe("progressive example journey contract", () => {
+  it("should use the published Container spacing prop in every stage", async () => {
+    for (const file of [
+      "../spa/src/application/layout.tsx",
+      "../ssr-only/src/application/layout.tsx",
+      "../api-ssr/src/application/layout.tsx",
+      "../ssg/src/components/site-layout.tsx",
+    ]) {
+      const source = await readFile(new URL(file, import.meta.url), "utf8");
+      expect(source, file).toContain('paddingY="lg"');
+      expect(source, file).toContain('paddingY="2xl"');
+      expect(source, file).not.toMatch(/<Container\b[^>]*\bpy=/);
+    }
+  });
+
   it("should keep browser features behind public function-first package surfaces", async () => {
     const root = new URL("../api-ssr/src/features/", import.meta.url);
     const files = (await readdir(root, { recursive: true })).filter((file) =>
