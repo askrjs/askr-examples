@@ -16,7 +16,7 @@ export function SiteLayout({ children }: { children?: unknown }) {
   return (
     <>
       <Header>
-        <Container size="xl" py="lg">
+        <Container size="xl" paddingY="lg">
           <Navbar>
             <NavBrand>
               <GaugeIcon aria-hidden="true" />
@@ -38,7 +38,7 @@ export function SiteLayout({ children }: { children?: unknown }) {
         </Container>
       </Header>
       <Main>
-        <Container size="xl" py="2xl">
+        <Container size="xl" paddingY="2xl">
           <Stack gap="2xl">{children}</Stack>
         </Container>
       </Main>
