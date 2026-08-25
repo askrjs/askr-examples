@@ -27,17 +27,17 @@
     "acceptance": "npm run check && npm run build && npm run test:browser"
   },
   "devDependencies": {
-    "@askrjs/askr": ">=0.2.0 <0.3.0",
-    "@askrjs/schema": ">=0.2.0 <0.3.0",
+    "@askrjs/askr": ">=0.2.3 <0.3.0",
+    "@askrjs/schema": ">=0.2.1 <0.3.0",
     "@playwright/test": "^1.62.1",
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.3.0",
     "jsdom": "^30.0.1",
     "monaco-editor": "^0.56.0",
     "playwright": "^1.62.1",
-    "tsx": "^4.23.11",
+    "tsx": "^4.23.12",
     "typescript": "^7.0.2",
-    "vite-plus": "^0.2.8",
-    "vitest": "^4.1.10"
+    "vite-plus": "^0.3.0",
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "dompurify": "3.4.13"
