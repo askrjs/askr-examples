@@ -13,14 +13,14 @@
     "typecheck": "tsc --noEmit --pretty false"
   },
   "dependencies": {
-    "@askrjs/askr": ">=0.2.3 <0.3.0",
-    "@askrjs/auth": ">=0.2.1 <0.3.0",
-    "@askrjs/lucide": ">=0.2.1 <0.3.0",
-    "@askrjs/themes": ">=0.2.4 <0.3.0",
-    "@askrjs/ui": ">=0.2.3 <0.3.0"
+    "@askrjs/askr": ">=0.3.0 <0.4.0",
+    "@askrjs/auth": ">=0.3.0 <0.4.0",
+    "@askrjs/lucide": ">=0.3.0 <0.4.0",
+    "@askrjs/themes": ">=0.3.0 <0.4.0",
+    "@askrjs/ui": ">=0.3.0 <0.4.0"
   },
   "devDependencies": {
-    "@askrjs/vite": ">=0.2.1 <0.3.0",
+    "@askrjs/vite": ">=0.3.0 <0.4.0",
     "typescript": "^7.0.2",
     "vite": "npm:@voidzero-dev/vite-plus-core@^0.3.1",
     "vite-plus": "^0.3.1",
