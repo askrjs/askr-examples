@@ -16,7 +16,7 @@ function LocaleContent({
 }) {
   const snapshot = workspaceText.dehydrate();
   return (
-    <Stack gap="4" data-catalog={snapshot.catalog}>
+    <Stack gap="md" data-catalog={snapshot.catalog}>
       <PageHeader
         title={workspaceText.text("title")}
         description={workspaceText.text("description")}

@@ -1,14 +1,14 @@
 import { Link } from "@askrjs/askr/router";
 import { BookOpenIcon, GaugeIcon } from "@askrjs/lucide";
 import {
+  Block,
   Button,
   Container,
   Header,
-  Inline,
   Main,
-  Navbar,
   NavBrand,
   NavGroup,
+  Navbar,
   Stack,
 } from "@askrjs/themes/components";
 
@@ -23,7 +23,7 @@ export function SiteLayout({ children }: { children?: unknown }) {
               <strong>Northstar Runbooks</strong>
             </NavBrand>
             <NavGroup align="end">
-              <Inline gap="2">
+              <Block direction="row" gap="sm">
                 <Button asChild variant="ghost">
                   <Link href="/">Home</Link>
                 </Button>
@@ -32,7 +32,7 @@ export function SiteLayout({ children }: { children?: unknown }) {
                     <BookOpenIcon aria-hidden="true" /> Runbooks
                   </Link>
                 </Button>
-              </Inline>
+              </Block>
             </NavGroup>
           </Navbar>
         </Container>
