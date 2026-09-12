@@ -5,3 +5,6 @@ dist/
 playwright-report/
 test-results/
 ssg/.askr/
+
+# Local agent state and worktrees
+.claude/
