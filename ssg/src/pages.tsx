@@ -70,7 +70,7 @@ export function RunbookPage({ slug }: { slug: string }) {
           <CardTitle>Recovery checklist</CardTitle>
         </CardHeader>
         <CardContent>
-          <Stack as="ol" gap="3">
+          <Stack as="ol" gap="md">
             <For each={runbook.steps} by={(step) => step}>
               {(step) => <li>{step}</li>}
             </For>

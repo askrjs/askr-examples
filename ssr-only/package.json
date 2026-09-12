@@ -15,15 +15,15 @@
     "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
-    "@askrjs/askr": ">=0.2.3 <0.3.0",
-    "@askrjs/lucide": ">=0.2.1 <0.3.0",
-    "@askrjs/node": ">=0.2.1 <0.3.0",
-    "@askrjs/server": ">=0.2.1 <0.3.0",
-    "@askrjs/themes": ">=0.2.4 <0.3.0",
-    "@askrjs/ui": ">=0.2.3 <0.3.0"
+    "@askrjs/askr": ">=0.3.0 <0.4.0",
+    "@askrjs/lucide": ">=0.3.0 <0.4.0",
+    "@askrjs/node": ">=0.3.0 <0.4.0",
+    "@askrjs/server": ">=0.3.0 <0.4.0",
+    "@askrjs/themes": ">=0.3.0 <0.4.0",
+    "@askrjs/ui": ">=0.3.0 <0.4.0"
   },
   "devDependencies": {
-    "@askrjs/vite": ">=0.2.1 <0.3.0",
+    "@askrjs/vite": ">=0.3.0 <0.4.0",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2",
     "vite": "npm:@voidzero-dev/vite-plus-core@^0.3.1",
