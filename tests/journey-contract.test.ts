@@ -93,7 +93,16 @@ describe("progressive example journey contract", () => {
     });
     if (spa.kind !== "render") throw new Error("SPA registry did not render.");
     const response = await ssrApp.fetch(new Request("http://example.test/"));
-    expect(await response.text()).toBe(spa.html);
+    const ssrHtml = await response.text();
+
+    // The SSR app inlines the collected theme style registry; the bare SPA
+    // string render does not. Compare the markup with that prelude normalized
+    // out, and assert separately that SSR still ships the critical styles.
+    const withoutStyleRegistry = (html: string) =>
+      html.replace(/<style data-askr-style-registry="true">[\s\S]*?<\/style>/g, "");
+
+    expect(withoutStyleRegistry(ssrHtml)).toBe(withoutStyleRegistry(spa.html));
+    expect(ssrHtml).toContain('<style data-askr-style-registry="true">');
   });
 
   it("should keep API-only routes as a subset of the final platform API", () => {

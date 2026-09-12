@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   EmptyState,
-  Inline,
   Input,
   Label,
   NavLink,
@@ -36,14 +35,14 @@ export function UsersPage() {
   return (
     <>
       <PageHeader title="Workspace users" description="The authenticated operator directory." />
-      <Stack as="ul" gap="3" p="0">
+      <Stack as="ul" gap="md" padding="0">
         <For each={[...users.data]} by={(user) => user.id}>
           {(user) => (
             <Block as="li">
               <Card>
                 <CardContent>
                   <Block rowFrom="sm" justify="between" align="center" gap="md">
-                    <Stack gap="1">
+                    <Stack gap="xs">
                       <strong>{user.name}</strong>
                       <span>{user.email}</span>
                     </Stack>
@@ -121,12 +120,12 @@ function UserEditor({ user }: { user: User }) {
                 value={name()}
                 onInput={(event: Event) => setName((event.target as HTMLInputElement).value)}
               />
-              <Inline justify="end" gap="2">
+              <Block direction="row" justify="end" gap="sm">
                 <DialogClose>Cancel</DialogClose>
                 <Button type="submit" variant="primary" disabled={update.state().pending}>
                   Save user
                 </Button>
-              </Inline>
+              </Block>
             </ActionForm>
             {update.state().error ? (
               <p role="alert">

@@ -33,7 +33,7 @@ export function LoginPage() {
           <CardTitle>Enter the operations workspace</CardTitle>
         </CardHeader>
         <CardContent>
-          <Stack gap="4">
+          <Stack gap="md">
             <p>
               No identity provider is required. The server creates a deterministic local session
               cookie.

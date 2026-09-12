@@ -21,9 +21,9 @@ export function WorkspaceLayout({ children }: { children?: unknown }) {
     <OperationsLayout>
       <Grid columns={{ base: 1, md: "14rem minmax(0, 1fr)" }} gap="2xl">
         <Aside aria-label="Workspace navigation">
-          <Stack gap="4">
+          <Stack gap="md">
             <h2>Operator tools</h2>
-            <Stack as="nav" gap="2">
+            <Stack as="nav" gap="sm">
               <NavLink href="/workspace" match="exact">
                 <LayoutDashboardIcon aria-hidden="true" /> Dashboard
               </NavLink>

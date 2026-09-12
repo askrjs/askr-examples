@@ -8,7 +8,6 @@ import {
   CardContent,
   EmptyState,
   Grid,
-  Inline,
   PageHeader,
   Stack,
   Stat,
@@ -61,7 +60,7 @@ export function ActivityPage() {
         title="Recent activity"
         description="Use local reactive state to focus the deterministic event stream."
       />
-      <Inline gap="2" wrap role="group" aria-label="Filter activity">
+      <Block direction="row" gap="sm" wrap role="group" aria-label="Filter activity">
         <FilterIcon aria-hidden="true" />
         <For each={filters} by={(value) => value}>
           {(value) => (
@@ -74,25 +73,25 @@ export function ActivityPage() {
             </Button>
           )}
         </For>
-      </Inline>
+      </Block>
       <Show
         when={() => visibleEvents().length > 0}
         fallback={
           <EmptyState title="No matching activity" description="Choose another activity filter." />
         }
       >
-        <Stack as="ol" gap="3" p="0" data-testid="activity-list" aria-live="polite">
+        <Stack as="ol" gap="md" padding="0" data-testid="activity-list" aria-live="polite">
           <For each={() => visibleEvents()} by={(event) => event.id}>
             {(event) => (
               <Block as="li" data-kind={event.kind}>
                 <Card>
                   <CardContent>
                     <Block rowFrom="sm" justify="between" gap="md">
-                      <Stack gap="2">
-                        <Inline gap="2" align="center">
+                      <Stack gap="sm">
+                        <Block direction="row" gap="sm" align="center">
                           <Badge>{event.kind}</Badge>
                           <strong>{event.title}</strong>
-                        </Inline>
+                        </Block>
                         <p>{event.detail}</p>
                       </Stack>
                       <time>{event.time}</time>

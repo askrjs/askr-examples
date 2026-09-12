@@ -1,14 +1,14 @@
 import { ActivityIcon, GaugeIcon, MoonIcon, SunIcon } from "@askrjs/lucide";
 import { ThemeScope, ThemeToggle } from "@askrjs/themes/theme";
 import {
+  Block,
   Container,
   Header,
-  Inline,
   Main,
-  Navbar,
   NavBrand,
   NavGroup,
   NavLink,
+  Navbar,
   Stack,
 } from "@askrjs/themes/components";
 
@@ -24,7 +24,7 @@ export function OperationsLayout({ children }: { children?: unknown }) {
               </NavLink>
             </NavBrand>
             <NavGroup align="end">
-              <Inline gap="2" align="center" wrap>
+              <Block direction="row" gap="sm" align="center" wrap>
                 <NavLink href="/" match="exact">
                   Overview
                 </NavLink>
@@ -36,7 +36,7 @@ export function OperationsLayout({ children }: { children?: unknown }) {
                   lightIcon={<SunIcon aria-hidden="true" />}
                   darkIcon={<MoonIcon aria-hidden="true" />}
                 />
-              </Inline>
+              </Block>
             </NavGroup>
           </Navbar>
         </Container>
