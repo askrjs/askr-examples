@@ -69,7 +69,10 @@ test("should ensure SSR sends application HTML, hydrates it in place, and naviga
       response: documentResponse,
       body: body.replace(
         "</body>",
-        '<script>window.__northstarServerNode = document.querySelector("#app > *");</script></body>',
+        // SSR now inlines the collected theme style registry as the first child
+        // of #app, so select the application node itself rather than the first
+        // element of any kind.
+        '<script>window.__northstarServerNode = document.querySelector("#app > :not(style)");</script></body>',
       ),
     });
   });
@@ -81,7 +84,9 @@ test("should ensure SSR sends application HTML, hydrates it in place, and naviga
   expect(
     await page.evaluate(() => {
       const state = window as Window & { __northstarServerNode?: Element };
-      return state.__northstarServerNode === document.querySelector("#app > *");
+      return (
+        state.__northstarServerNode === document.querySelector("#app > :not(style)")
+      );
     }),
   ).toBe(true);
 
