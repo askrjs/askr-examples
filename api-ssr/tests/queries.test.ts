@@ -67,16 +67,25 @@ describe("defineQuery fetchers", () => {
     },
   );
 
-  it("should reject when the forwarded signal is aborted", async () => {
+  it("should cancel an in-flight request when the context signal aborts", async () => {
+    let started!: () => void;
+    const inFlight = new Promise<void>((resolve) => (started = resolve));
     vi.stubGlobal("fetch", (_url: string, init?: RequestInit) => {
-      const signal = init?.signal;
-      if (signal?.aborted) return Promise.reject(signal.reason);
-      return Promise.resolve(new Response("{}"));
+      started();
+      // Never settles on its own: only an abort on the forwarded signal ends it.
+      return new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => reject(init.signal?.reason), {
+          once: true,
+        });
+      });
     });
     const controller = new AbortController();
     const reason = new Error("navigated away");
+
+    const pending = userQuery.fetch({ id: "1" }, { signal: controller.signal });
+    await inFlight;
     controller.abort(reason);
 
-    await expect(userQuery.fetch({ id: "1" }, { signal: controller.signal })).rejects.toBe(reason);
+    await expect(pending).rejects.toBe(reason);
   });
 });
