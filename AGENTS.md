@@ -16,6 +16,18 @@ it into magic.
 Run `npm run check` and `npm run build`. A changed stage must remain runnable,
 and journey assertions and generated contracts must agree with the example.
 
+## Changelog
+
+Any change to the `version` field in `package.json`, whether a release,
+prerelease, or patch bump, must include a matching `## <version>` section in
+`CHANGELOG.md` in the same commit or pull request. Date the section and list
+breaking changes (with migration notes), deprecations, additions, and fixes.
+Move entries from `Unreleased` into the new version section rather than leaving
+them there. If the repository has no `CHANGELOG.md` yet, create one (Keep a
+Changelog style) at the next version bump. Do not publish or tag a version whose
+changelog section is missing. This package is private and not published to npm,
+but the rule still applies whenever its `version` changes.
+
 ## Optimization Gate
 
 A benchmark number is only half of an optimization's success criterion. The
