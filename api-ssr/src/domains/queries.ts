@@ -13,32 +13,32 @@ async function getJson<T>(path: string, signal: AbortSignal): Promise<T> {
 
 export const sessionQuery = defineQuery<Record<string, never>, AuthContext>({
   key: () => "session",
-  fetch: ({ signal }) => getJson("/api/session", signal),
+  fetch: (_input, { signal }) => getJson("/api/session", signal),
 });
 
 export const dashboardQuery = defineQuery<Record<string, never>, Dashboard>({
   key: () => "dashboard",
-  fetch: ({ signal }) => getJson("/api/dashboard", signal),
+  fetch: (_input, { signal }) => getJson("/api/dashboard", signal),
 });
 
 export const activityQuery = defineQuery<Record<string, never>, readonly ActivityEvent[]>({
   key: () => "activity",
-  fetch: ({ signal }) => getJson("/api/activity", signal),
+  fetch: (_input, { signal }) => getJson("/api/activity", signal),
 });
 
 export const usersQuery = defineQuery<Record<string, never>, readonly User[]>({
   key: () => "users",
-  fetch: ({ signal }) => getJson("/api/users", signal),
+  fetch: (_input, { signal }) => getJson("/api/users", signal),
 });
 
 export const userQuery = defineQuery<{ id: string }, User>({
   key: ({ id }) => `users:${id}`,
-  fetch: ({ id, signal }) => getJson(`/api/users/${encodeURIComponent(id)}`, signal),
+  fetch: ({ id }, { signal }) => getJson(`/api/users/${encodeURIComponent(id)}`, signal),
 });
 
 export const policyQuery = defineQuery<{ id: string }, Policy>({
   key: ({ id }) => `policies:${id}`,
-  fetch: ({ id, signal }) => getJson(`/api/policies/${encodeURIComponent(id)}`, signal),
+  fetch: ({ id }, { signal }) => getJson(`/api/policies/${encodeURIComponent(id)}`, signal),
 });
 
 export const dashboardData = () => createQuery(dashboardQuery, {});

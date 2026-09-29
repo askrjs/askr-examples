@@ -1,4 +1,5 @@
-import { For, state } from "@askrjs/askr";
+import { state } from "@askrjs/askr";
+import { For } from "@askrjs/askr/control";
 import { action, ActionForm, type ActionValidationError } from "@askrjs/askr/actions";
 import type { InferSchema } from "@askrjs/schema";
 import {
