@@ -4,6 +4,7 @@ import { security } from "@askrjs/server/openapi";
 import type { AskrAppApi } from "@askrjs/server/askr";
 import type { AppDependencies } from "../boot/dependencies.js";
 import { SESSION_COOKIE } from "../domains/sessions/repository.js";
+import { safeNextPath } from "../features/session/redirect.js";
 import type { UserUpdate } from "../domains/users/repository.js";
 
 function parseVersion(value: string | null): number | null {
@@ -86,9 +87,7 @@ export function registerApiRoutes(api: AskrAppApi<AppDependencies>, schemas: Api
       documentation: { query: { next: {} } },
       async handler(ctx, input, { sessions }) {
         const session = await sessions.create();
-        const requested = input.query.next;
-        const next =
-          requested?.startsWith("/") && !requested.startsWith("//") ? requested : "/workspace";
+        const next = safeNextPath(input.query.next, ctx.url.origin);
         const response = ctx.headers.get("accept")?.includes("text/html")
           ? ctx.redirect(next, 303)
           : ctx.created({ authenticated: true });
