@@ -94,8 +94,10 @@ The simulated fixture deliberately assumes that policy for its configured API;
 it does not establish your tenant's configuration.
 
 Microsoft uses a fixed tenant and fully qualified configured Graph permissions.
-Google uses explicit API scopes, keeps API grants separate from OIDC identity,
-and requests consent only through the preset's bounded recovery policy. See the
+Google starts with OIDC identity only. The first Calendar server action requests
+its separate explicit API consent; returning from consent does not resubmit that
+action. The next deliberate click makes one API call. Its bounded recovery policy
+also handles later expired permissions. See the
 primary [Microsoft authorization-code protocol](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)
 and [Google web-server flow](https://developers.google.com/identity/protocols/oauth2/web-server).
 An API permission does not become a browser role merely because a provider issued
@@ -129,7 +131,25 @@ The private query belongs to Core's current app data runtime. Logout publishes
 anonymous state locally, retires private DOM and aborts in-flight private work;
 reload confirms the server authority is gone. This is local logout. Provider
 revocation/logout is a separate explicit server capability, not implied by that
-button. The signed HTTP tests also exercise supported explicit revocation.
+button. The existing same-origin server route accepts the following deliberate
+JSON POST bodies at `/auth/logout`, with the application's HttpOnly cookie and
+same-origin `Origin` header:
+
+| Provider  | Explicit provider operation                                                        |
+| --------- | ---------------------------------------------------------------------------------- |
+| Auth0     | `{ "provider": "auth0", "revoke": true, "providerLogout": true, "returnTo": "/" }` |
+| Microsoft | `{ "provider": "microsoft", "providerLogout": true, "returnTo": "/" }`             |
+| Google    | `{ "provider": "google", "revoke": true }`                                         |
+| Apple     | `{ "provider": "apple", "revoke": true }`                                          |
+
+Invoke this from an application-owned server route/action when implementing a
+provider-wide sign-out control. Auth0/Microsoft return a 303 to their canonical
+end-session endpoint after retiring local authority; Google/Apple revocation
+returns 204. The end-session URL contains only the public client ID and registered
+return URL. It never contains an ID/access/refresh token. Preserve the response's
+Set-Cookie headers when forwarding it. The runnable signed HTTP tests exercise
+these exact server calls, local retirement and secret-free redirect fields;
+simulated qualification never follows those redirects to a live provider.
 
 Every action submission resolves a fresh CSRF token from `/api/action-csrf`, with
 same-origin credentials, no-store, redirect errors and the supplied AbortSignal.
@@ -165,30 +185,34 @@ remain responsible for exhaustive protocol and authority race coverage.
 
 `tests/signed-provider.ts` generates an owned temporary CA with OpenSSL, serves
 signed protocol responses over real loopback HTTPS, and forwards only exact
-allowlisted canonical provider endpoints through a pinned CA. Browser requests
-retain canonical provider URLs and site/cookie semantics while Playwright routes
-their transport to those real local servers. Unknown network traffic fails. No
-live credentials, global DNS rewrite, TLS bypass, test-only producer source import
-or browser token SDK is supplied. Every hold is released in finally and drains
-are bounded. Native installed checks use public package export paths and module
-identities, not source aliases. The seven-stage final candidate helper additionally
-checks ordinary independent install/fresh-ci/lock/SRI/physical graph provenance.
+allowlisted canonical server endpoints through a pinned CA. The browser uses an
+explicit simulated-provider handoff: the fixture verifies the preset's canonical
+authorization URL, preserves the application's actual 303 and Set-Cookie headers,
+and changes its Location to an owned same-site handoff page. Its visible link
+enters `https://provider.example-provider.test`, a separate reserved site. The
+provider then submits the real callback form: POST for Apple and GET for the
+other presets. The complete canonical authorization URL/query must match the
+signed provider receipt, including state, nonce, PKCE and Apple's `form_post`.
 
-These are prepared acceptance controls. Passing them later establishes simulated
-release evidence, not real Auth0/Microsoft/Google/Apple service certification.
+The handoff avoids macOS Apple AppSSO and WebKit's interrupted cross-site redirect
+metadata. Neither feature belongs to this simulated HTTP provider. A strict
+CONNECT proxy exposes only the two owned loopback listeners, with no DNS or
+external fallback; canonical live provider authorities are rejected. Its
+ephemeral certificate is accepted only in that proxy-bound browser context;
+Node continues to verify the pinned CA. No global DNS/trust setting or provider
+credential is changed. Playwright routes only the script/private-query barriers;
+actual HTTPS redirects, cookies and callback bodies use native browser transport.
+Apple's Cookie assertions use headers received by the actual HTTPS application,
+because WebKit omits cross-site Cookie from automation request metadata; callback
+URL, method and body must also match the browser request.
 
-## Browser qualification currently blocked
+Unknown traffic, unexpected request failures and leaked secrets fail acceptance.
+Every hold is released in finally; routes, CONNECT sockets and application engines
+drain within owned bounds. Native installed checks use public package export paths
+and module identities, not source aliases. The seven-stage final candidate helper
+also checks ordinary independent install/fresh-ci/lock/SRI/physical graph provenance.
 
-The current Playwright transport fixture cannot complete redirected provider
-navigation. Its public route handler intercepts only the first request in a
-redirect chain; after the application's actual 303 response, the browser follows
-the canonical provider URL outside that handler. This produces a DNS failure for
-the simulated Auth0 tenant and can contact a real provider hostname for other
-presets. Do not count the prepared browser matrix as passing acceptance.
-
-A bounded experiment that stopped the top-level redirect and initiated a fresh
-GET to the exact Location also raced navigation and failed. It is not included in
-this source. The remaining fixture correction must preserve the actual 303,
-Set-Cookie processing, canonical URLs, state/nonce/PKCE, callback behavior and
-strict network/cancellation assertions. Installed contracts, unit tests,
-TypeScript compilers and production builds are separate gates.
+All 54 signed browser cases pass locally on Node 24.21.0/npm 12.0.1. Replay them
+against the exact coordinated candidate graph before release. They establish
+simulated protocol/application evidence. Live service qualification is deferred
+in [Auth #71](https://github.com/askrjs/askr-auth/issues/71).

@@ -30,10 +30,12 @@ export function createExampleRegistry(config: PublicConfig) {
   function Login() {
     const location = currentRoute();
     const next = safeReturnTo(location.query.get("next"), "https://askr.invalid");
-    // Auth0's optional server API policy is selected only by a server-owned action failure.
+    // Google and Auth0 request API consent only after a server-owned action needs it.
     const href = sessionAuth.loginHref(config.provider, {
       returnTo: next,
-      ...(config.api ? { resource: config.api.resource, scopes: config.api.scopes } : {}),
+      ...(config.provider === "microsoft" && config.api
+        ? { resource: config.api.resource, scopes: config.api.scopes }
+        : {}),
     });
     return (
       <main>

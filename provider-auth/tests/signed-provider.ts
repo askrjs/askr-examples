@@ -92,12 +92,24 @@ export async function signedProviderFixture(
   document: string,
   assetsDirectory?: string,
   publicOrigin?: string,
+  browserSimulation = false,
 ) {
+  // A different reserved site preserves SameSite semantics without invoking a
+  // provider's OS sign-in extension. This is never a live provider origin.
+  const browserAuthorizationOrigin = browserSimulation
+    ? "https://provider.example-provider.test"
+    : undefined;
   const directory = await mkdtemp(join(tmpdir(), "askr-provider-app-"));
   // The complete allocation phase is covered, including certificate, key and listener setup.
   let cleanupEarly: (() => Promise<void>) | undefined;
   try {
     const events: MockEvent[] = [];
+    const callbackRequests: Array<{
+      url: string;
+      method: string;
+      headers: Record<string, string>;
+      body?: Uint8Array;
+    }> = [];
     const failures: unknown[] = [];
     const unknownTraffic: string[] = [];
     const releaseHolds = new Set<() => void>();
@@ -142,7 +154,7 @@ export async function signedProviderFixture(
         "-subj",
         "/CN=Askr owned protocol fixture",
         "-addext",
-        "subjectAltName=DNS:app.example.test,DNS:tenant.example.test,DNS:login.microsoftonline.com,DNS:accounts.google.com,DNS:oauth2.googleapis.com,DNS:www.googleapis.com,DNS:appleid.apple.com,DNS:api.example.test,DNS:graph.microsoft.com",
+        "subjectAltName=DNS:app.example.test,DNS:provider.example-provider.test,DNS:tenant.example.test,DNS:login.microsoftonline.com,DNS:accounts.google.com,DNS:oauth2.googleapis.com,DNS:www.googleapis.com,DNS:appleid.apple.com,DNS:api.example.test,DNS:graph.microsoft.com",
         "-keyout",
         keyPath,
         "-out",
@@ -207,6 +219,9 @@ export async function signedProviderFixture(
             ? "https://www.googleapis.com/calendar/v3/users/me/calendarList"
             : undefined;
     const discovery = `${issuer.replace(/\/$/u, "")}/.well-known/openid-configuration`;
+    const browserAuthorize = browserAuthorizationOrigin
+      ? new URL(new URL(authorize).pathname, browserAuthorizationOrigin).href
+      : authorize;
     const allowed = new Set([
       discovery,
       authorize,
@@ -243,6 +258,12 @@ export async function signedProviderFixture(
       async (request, response) => {
         try {
           const target = new URL(request.url ?? "/", `https://${request.headers.host}`);
+          if (browserAuthorizationOrigin && target.origin === browserAuthorizationOrigin) {
+            assert.equal(`${target.origin}${target.pathname}`, browserAuthorize);
+            const canonical = new URL(authorize);
+            target.host = canonical.host;
+            target.protocol = canonical.protocol;
+          }
           const exact = `${target.origin}${target.pathname}${target.search}`;
           const endpoint = `${target.origin}${target.pathname}`;
           assert.ok(allowed.has(endpoint) || allowed.has(exact), "Unknown provider endpoint");
@@ -317,11 +338,11 @@ export async function signedProviderFixture(
               state: query.get("state")!,
               ...(deny ? { error: "access_denied" } : { code }),
             });
-            if (provider === "apple") {
-              assert.equal(query.get("response_mode"), "form_post");
+            if (provider === "apple") assert.equal(query.get("response_mode"), "form_post");
+            if (provider === "apple" || browserAuthorizationOrigin) {
               response.setHeader("content-type", "text/html; charset=utf-8");
               return response.end(
-                `<form method="post" action="${html(transaction.redirect)}">${[...result, ["user", JSON.stringify({ name: { firstName: "Unsigned", lastName: "Display Hint" } })]].map(([key, value]) => `<input type="hidden" name="${html(key)}" value="${html(value)}">`).join("")}<button id="continue" type="submit">Complete Apple sign in</button></form>`,
+                `<form method="${provider === "apple" ? "post" : "get"}" action="${html(transaction.redirect)}">${[...result, ...(provider === "apple" ? [["user", JSON.stringify({ name: { firstName: "Unsigned", lastName: "Display Hint" } })]] : [])].map(([key, value]) => `<input type="hidden" name="${html(key!)}" value="${html(value!)}">`).join("")}<button id="continue" type="submit">Complete ${provider} sign in</button></form>`,
               );
             }
             response.writeHead(303, { location: `${transaction.redirect}?${result}` });
@@ -583,11 +604,65 @@ export async function signedProviderFixture(
         fetch: transport,
         clock: () => now,
       });
-      app = owners.withApplicationLifecycle(
+      const applicationOwner = owners.withApplicationLifecycle(
         owners.createDocumentApp(application.app, document),
         application.app,
         application.publicConfig,
       );
+      // The preset still constructs and validates canonical endpoints. Only the
+      // simulated browser hop uses a reserved origin, keeping OS provider SDKs
+      // outside this signed HTTP fixture (notably Apple's macOS AppSSO).
+      app = browserAuthorizationOrigin
+        ? {
+            ...applicationOwner,
+            async fetch(request) {
+              const requestUrl = new URL(request.url);
+              if (
+                requestUrl.origin === origin &&
+                requestUrl.pathname === `/auth/callback/${provider}`
+              ) {
+                callbackRequests.push({
+                  url: request.url,
+                  method: request.method,
+                  headers: Object.fromEntries(request.headers),
+                  ...(request.body
+                    ? { body: new Uint8Array(await request.clone().arrayBuffer()) }
+                    : {}),
+                });
+              }
+              if (requestUrl.origin === origin && requestUrl.pathname === "/__fixture/authorize") {
+                assert.equal(request.method, "GET");
+                const simulated = new URL(browserAuthorize);
+                simulated.search = requestUrl.search;
+                return new Response(
+                  `<a id="provider-continue" href="${html(simulated.href)}">Continue to signed simulated provider</a>`,
+                  {
+                    headers: {
+                      "content-type": "text/html; charset=utf-8",
+                      "cache-control": "no-store",
+                    },
+                  },
+                );
+              }
+              const response = await applicationOwner.fetch(request);
+              const location = response.headers.get("location");
+              if (!location) return response;
+              const target = new URL(location, origin);
+              if (target.origin === origin) return response;
+              assert.equal(`${target.origin}${target.pathname}`, authorize);
+              assert.equal(response.status, 303);
+              events.push({ kind: "browser_authorize_redirect", target: target.href });
+              // WebKit reports a native cross-site 303 navigation as interrupted.
+              // Keep the actual response/cookies and make the simulator handoff
+              // explicit before a browser gesture enters the separate provider site.
+              const handoff = new URL("/__fixture/authorize", origin);
+              handoff.search = target.search;
+              const headers = new Headers(response.headers);
+              headers.set("location", handoff.href);
+              return new Response(response.body, { status: response.status, headers });
+            },
+          }
+        : applicationOwner;
       const assets = assetsDirectory ?? join(directory, "assets");
       if (!assetsDirectory) {
         await mkdir(assets);
@@ -618,8 +693,31 @@ export async function signedProviderFixture(
       origin,
       env,
       events,
+      callbackRequests,
       failures,
       unknownTraffic,
+      browserDestinations: new Map([
+        [`${new URL(origin).hostname}:${new URL(origin).port || "443"}`, appPort],
+        ...[...(browserAuthorizationOrigin ? [browserAuthorize] : allowed)].map(
+          (endpoint): [string, number] => {
+            const url = new URL(endpoint);
+            return [`${url.hostname}:${url.port || "443"}`, mockPort];
+          },
+        ),
+      ]),
+      assertBrowserDestination(url: string) {
+        const target = new URL(url);
+        if (
+          target.origin !== origin &&
+          (browserAuthorizationOrigin
+            ? `${target.origin}${target.pathname}` !== browserAuthorize
+            : !allowed.has(`${target.origin}${target.pathname}`) && !allowed.has(target.href))
+        ) {
+          unknownTraffic.push(target.href);
+          throw new Error("Unknown browser destination");
+        }
+      },
+      browserAuthorizationOrigin: new URL(browserAuthorize).origin,
       secrets() {
         return [
           "MOCK_CLIENT_PRIVATE_CANARY",
@@ -715,9 +813,17 @@ export async function signedProviderFixture(
         );
         assert.equal(login.status, 303);
         const cookies = cookieHeaders(login.headers.getSetCookie());
-        const authorization = await pinned(new URL(login.headers.get("location")!), {}, mockPort);
+        const authorization = await pinned(
+          new URL(
+            browserSimulation
+              ? events.filter((event) => event.kind === "browser_authorize_redirect").at(-1)!.target
+              : login.headers.get("location")!,
+          ),
+          {},
+          mockPort,
+        );
         let callback: Response;
-        if (provider === "apple") {
+        if (provider === "apple" || browserAuthorizationOrigin) {
           const page = await authorization.text();
           const fields = new URLSearchParams();
           for (const match of page.matchAll(/name="([^"]+)" value="([^"]*)"/gu))
@@ -729,19 +835,24 @@ export async function signedProviderFixture(
                 .replaceAll("&gt;", ">")
                 .replaceAll("&amp;", "&"),
             );
+          const callbackUrl = new URL(`/auth/callback/${provider}`, origin);
+          if (provider !== "apple") callbackUrl.search = fields.toString();
           callback = await pinned(
-            new URL(`/auth/callback/${provider}`, origin),
+            callbackUrl,
             {
-              method: "POST",
+              method: provider === "apple" ? "POST" : "GET",
               headers: {
-                cookie: cookies
-                  .split("; ")
-                  .filter((value) => value.startsWith("__Host-askr-txn-"))
-                  .join("; "),
+                cookie:
+                  provider === "apple"
+                    ? cookies
+                        .split("; ")
+                        .filter((value) => value.startsWith("__Host-askr-txn-"))
+                        .join("; ")
+                    : cookies,
                 "content-type": "application/x-www-form-urlencoded",
-                origin: new URL(authorize).origin,
+                origin: new URL(browserAuthorize).origin,
               },
-              body: Buffer.from(fields.toString()),
+              ...(provider === "apple" ? { body: Buffer.from(fields.toString()) } : {}),
             },
             appPort,
           );

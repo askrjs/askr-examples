@@ -34,6 +34,51 @@ function actionHeaders(origin: string, cookie: string, csrf: string) {
   };
 }
 describe("real signed provider application transport", () => {
+  it.each(["auth0", "microsoft"] as const)(
+    "retires local authority before %s provider logout without exposing tokens",
+    async (provider) => {
+      const f = await fixture(provider);
+      const signed = await f.login();
+      const response = await f.request("/auth/logout", {
+        method: "POST",
+        headers: { cookie: signed.cookie, origin: f.origin, "content-type": "application/json" },
+        body: Buffer.from(
+          JSON.stringify({
+            provider,
+            providerLogout: true,
+            revoke: provider === "auth0",
+            returnTo: "/",
+          }),
+        ),
+      });
+      expect(response.status).toBe(303);
+      const location = response.headers.get("location")!;
+      const destination = new URL(location);
+      expect(`${destination.origin}${destination.pathname}`).toBe(
+        provider === "auth0"
+          ? "https://tenant.example.test/oidc/logout"
+          : "https://login.microsoftonline.com/01234567-89ab-cdef-0123-456789abcdef/oauth2/v2.0/logout",
+      );
+      expect(Object.fromEntries(destination.searchParams)).toEqual({
+        client_id: "fixture-client",
+        post_logout_redirect_uri: `${f.origin}/`,
+      });
+      for (const secret of [...canaries, ...f.secrets()]) expect(location).not.toContain(secret);
+      expect(
+        response.headers
+          .getSetCookie()
+          .some((line) => line.startsWith("__Host-askr-session=;") && line.includes("Max-Age=0")),
+      ).toBe(true);
+      const retired = await f.request("/auth/session", { headers: { cookie: signed.cookie } });
+      expect((await retired.json()).authenticated).toBe(false);
+      // The simulator never follows an end-session redirect to a live service.
+      expect(
+        f.events.some((event) =>
+          event.target.startsWith(`${destination.origin}${destination.pathname}`),
+        ),
+      ).toBe(false);
+    },
+  );
   it.each(["auth0", "microsoft", "google", "apple"] as const)(
     "completes %s signed HTTPS state/PKCE/JWKS and contains snapshots",
     async (provider) => {
@@ -150,32 +195,38 @@ describe("real signed provider application transport", () => {
         .authenticated,
     ).toBe(false);
   });
-  it("requires explicit API consent after an identity-only Auth0 sign-in", async () => {
-    const f = await fixture("auth0");
-    const signed = await f.login();
-    expect(signed.response.status).toBe(303);
-    const authorization = f.events.find((event) => event.kind === "authorize");
-    expect(authorization).toBeTruthy();
-    expect(new URL(authorization!.target).searchParams.has("audience")).toBe(false);
-    const csrf = await (
-      await f.request("/api/action-csrf", { headers: { cookie: signed.cookie } })
-    ).json();
-    const action = await f.request("/account", {
-      method: "POST",
-      headers: actionHeaders(f.origin, signed.cookie, csrf.csrfToken),
-      body: Buffer.from("{}"),
-    });
-    expect(action.status).toBe(401);
-    expect(await action.json()).toMatchObject({
-      code: "interaction-required",
-      reason: "consent",
-      provider: "auth0",
-      resource: f.env.api!.resource,
-      scopes: f.env.api!.scopes,
-    });
-    expect(f.refreshes).toBe(0);
-    expect(f.events.some((event) => event.target === f.env.api!.url)).toBe(false);
-  });
+  it.each(["auth0", "google"] as const)(
+    "requires explicit API consent after an identity-only %s sign-in",
+    async (provider) => {
+      const f = await fixture(provider);
+      const signed = await f.login();
+      expect(signed.response.status).toBe(303);
+      const authorization = f.events.find((event) => event.kind === "authorize");
+      expect(authorization).toBeTruthy();
+      expect(new URL(authorization!.target).searchParams.has("audience")).toBe(false);
+      expect(new URL(authorization!.target).searchParams.get("scope")?.split(" ")).not.toContain(
+        f.env.api!.scopes[0],
+      );
+      const csrf = await (
+        await f.request("/api/action-csrf", { headers: { cookie: signed.cookie } })
+      ).json();
+      const action = await f.request("/account", {
+        method: "POST",
+        headers: actionHeaders(f.origin, signed.cookie, csrf.csrfToken),
+        body: Buffer.from("{}"),
+      });
+      expect(action.status).toBe(401);
+      expect(await action.json()).toMatchObject({
+        code: "interaction-required",
+        reason: "consent",
+        provider,
+        resource: f.env.api!.resource,
+        scopes: f.env.api!.scopes,
+      });
+      expect(f.refreshes).toBe(0);
+      expect(f.events.some((event) => event.target === f.env.api!.url)).toBe(false);
+    },
+  );
   it("aborts an allocated refresh before a logout response can revive private state", async () => {
     const f = await fixture("google");
     const signed = await f.login("/account", f.env.api);

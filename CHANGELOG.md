@@ -32,3 +32,9 @@
   workspace installations.
 - Send independent-stage audits to the public advisory database while retaining
   the frozen candidate registry for package installation.
+- Qualify all 54 signed provider browser cases through an explicit simulated
+  provider handoff and strict loopback CONNECT transport. Preserve Apple's
+  cross-site `form_post`, canonical authorization parameters, actual callback
+  cookies, exact private-request cancellation and bounded cleanup.
+- Start Google sign-in with identity scopes, then request Calendar permission
+  through the first server action's explicit consent flow.
