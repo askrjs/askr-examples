@@ -1,0 +1,43 @@
+{
+  "name": "@askrjs/example-provider-auth",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build && npm start",
+    "build": "vp build --configLoader native && vp build --ssr src/server/production.ts --outDir dist/server --configLoader native",
+    "start": "node --env-file=.env.local serve.mjs",
+    "fmt": "vp fmt .",
+    "lint": "vp lint .",
+    "test": "vp test run",
+    "typecheck": "tsc --noEmit --pretty false",
+    "check": "npm run lint && npm run typecheck && npm test && npm run test:installed",
+    "test:browser": "playwright test --config tests/browser/playwright.config.ts",
+    "test:types6": "node scripts/typescript6.mjs --noEmit --pretty false",
+    "test:types7": "tsc --noEmit --pretty false",
+    "build:fixture": "vp build --ssr tests/browser/app-host.ts --outDir dist/fixture --configLoader native",
+    "pretest:browser": "npm run build:fixture",
+    "acceptance": "npm run check && npm run test:types6 && npm run test:types7 && npm run build && npm run test:browser",
+    "test:installed": "node scripts/installed-surface.mjs"
+  },
+  "dependencies": {
+    "@askrjs/askr": ">=0.5.0 <0.6.0",
+    "@askrjs/auth": ">=0.5.0 <0.6.0",
+    "@askrjs/node": ">=0.5.0 <0.6.0",
+    "@askrjs/schema": ">=0.5.0 <0.6.0",
+    "@askrjs/server": ">=0.5.0 <0.6.0"
+  },
+  "devDependencies": {
+    "@askrjs/vite": ">=0.5.0 <0.6.0",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.3.0",
+    "typescript": "^7.0.2",
+    "typescript6": "npm:typescript@6.0.3",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.3",
+    "vite-plus": "0.3.3"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "npm@12.0.1"
+}

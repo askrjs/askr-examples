@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import app from "../src/server/entry-server.js";
 
 describe("SSR-only operations workspace", () => {

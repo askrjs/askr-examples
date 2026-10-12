@@ -10,7 +10,8 @@
     "api-ssr",
     "api-only",
     "ssg",
-    "mcp-server"
+    "mcp-server",
+    "provider-auth"
   ],
   "type": "module",
   "scripts": {
@@ -23,12 +24,18 @@
     "openapi:check": "npm run openapi:check --workspaces --if-present",
     "test:journey": "vp test run -c vitest.config.ts",
     "test:browser": "playwright test",
-    "check": "npm run lint && npm run typecheck && npm test && npm run test:journey && npm run openapi:check",
-    "acceptance": "npm run check && npm run build && npm run test:browser"
+    "check": "npm run lint && npm run lint:qualification && npm run typecheck && npm test && npm run test:journey && npm run openapi:check && npm run test:provider-installed",
+    "acceptance": "npm run check && npm run build && npm run test:runtime && npm run test:browser && npm run test:provider-types && npm run test:provider-browser",
+    "lint:qualification": "vp lint scripts/qualification playwright.config.ts playwright",
+    "test:runtime": "node scripts/qualification/workspace-runtime.mjs",
+    "test:stages": "node scripts/qualification/independent-stages.mjs --source .",
+    "test:provider-browser": "npm run test:browser --workspace @askrjs/example-provider-auth",
+    "test:provider-types": "npm run test:types6 --workspace @askrjs/example-provider-auth && npm run test:types7 --workspace @askrjs/example-provider-auth",
+    "test:provider-installed": "npm run test:installed --workspace @askrjs/example-provider-auth"
   },
   "devDependencies": {
-    "@askrjs/askr": ">=0.4.0 <0.5.0",
-    "@askrjs/schema": ">=0.4.0 <0.5.0",
+    "@askrjs/askr": ">=0.5.0 <0.6.0",
+    "@askrjs/schema": ">=0.5.0 <0.6.0",
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.3.0",
     "jsdom": "^30.0.1",
@@ -40,7 +47,7 @@
     "vitest": "^4.1.11"
   },
   "overrides": {
-    "dompurify": "3.4.13"
+    "dompurify": "3.4.16"
   },
   "engines": {
     "node": ">=24.0.0"
