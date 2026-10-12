@@ -2,6 +2,7 @@ import { createMutation } from "@askrjs/askr/data";
 import type { AuthContext } from "@askrjs/auth";
 import { Button, Card, CardContent, CardHeader, CardTitle, Stack } from "@askrjs/themes/components";
 import { OperationsLayout } from "../../application/layout.js";
+import { safeNextPath } from "./redirect.js";
 import { responseJson } from "../shared/transport.js";
 
 export function LoginPage() {
@@ -22,8 +23,11 @@ export function LoginPage() {
     const next =
       typeof window === "undefined"
         ? "/workspace"
-        : (new URLSearchParams(window.location.search).get("next") ?? "/workspace");
-    window.location.assign(next.startsWith("/") ? next : "/workspace");
+        : safeNextPath(
+            new URLSearchParams(window.location.search).get("next"),
+            window.location.origin,
+          );
+    window.location.assign(next);
   };
 
   return (
