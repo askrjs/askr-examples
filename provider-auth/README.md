@@ -201,7 +201,8 @@ npm run test:browser       # pretest builds the real server fixture entry
 The browser suite covers four providers × SSR/SPA × three engines, exact initial
 session GET counts, SSR node identity, safe next/query/hash, secure HttpOnly/Lax
 session cookies, Apple's cross-site POST without that application cookie, server
-API actions, copied-callback rejection, consent, expiry, private-query cancellation,
+API actions, copied-callback rejection, consent, expiry during a live private-query
+refresh (retiring private DOM and data before login recovery), private-query cancellation,
 logout/reload and bundle/console secret absence. An additional malformed-marker
 control clears a previously signed-in server root before boot. HTTP tests exercise
 actual signatures, state, nonce, PKCE, Apple ES256, rotation/revocation, engine

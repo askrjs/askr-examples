@@ -120,6 +120,7 @@ async function start(
     for (const secret of f.secrets()) expect(client).not.toContain(secret);
     const sessionGets: string[] = [];
     const actionRequests: string[] = [];
+    const unauthorizedPrivateRequests = new Set<BrowserRequest>();
     const browserErrors: string[] = [];
     const consoleMessages: string[] = [];
     let scriptGate: Promise<void> | undefined;
@@ -136,9 +137,16 @@ async function start(
           cancel(): void;
         }
       | undefined;
+    context.on("response", (response) => {
+      const url = new URL(response.url());
+      if (response.status() === 401 && url.origin === f.origin && url.pathname === "/api/private")
+        unauthorizedPrivateRequests.add(response.request());
+    });
     context.on("requestfailed", (request) => {
       if (privateHold?.request === request && privateHold.expectedCancellation)
         privateHold.cancel();
+      // Retirement aborts the exact request whose 401 exposed the expired session.
+      else if (unauthorizedPrivateRequests.delete(request)) return;
       else browserErrors.push(`Unexpected browser request failure: ${request.url()}`);
     });
     function observe(page: Page) {
@@ -535,6 +543,10 @@ for (const provider of ["auth0", "microsoft", "google", "apple"] as const)
           expect(f.refreshes).toBe(1); // There is no automatic refresh retry.
         }
         f.advance(8 * 60 * 60 * 1000);
+        await page.getByTestId("reload-private").click();
+        await expect(page.getByTestId("private-owner")).toHaveCount(0);
+        await expect(page).toHaveURL(/\/login\?next=/u);
+        expect(new URL(page.url()).searchParams.get("next")).toBe("/account");
         await page.reload();
         await ready(page);
         await expect(page.getByTestId("private-owner")).toHaveCount(0);

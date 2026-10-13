@@ -20,6 +20,10 @@
 
 ### Fixed
 
+- Retire private provider-page state and recover through login with `next` when
+  a live private-query request returns 401 after session expiry. Ignore late
+  unauthorized responses from requests belonging to a retired identity.
+
 - Declare SPA's own jsdom dependency and keep installed/generated files outside
   each stage's lint and format scope.
 - Preserve the API/SSR DOMPurify override for standalone installation.

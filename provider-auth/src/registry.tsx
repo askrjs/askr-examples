@@ -11,12 +11,20 @@ import { action } from "@askrjs/askr/actions";
 import { state } from "@askrjs/askr";
 import { requireUser } from "@askrjs/auth";
 import { readProviderAction, actionCsrf, actionProblem, type ProviderSummary } from "./actions.js";
-import { privateQuery } from "./private-query.js";
+import { createPrivateQuery } from "./private-query.js";
 import { safeReturnTo } from "./redirect.js";
 import type { PublicConfig } from "./public-config.js";
 
 export function createExampleRegistry(config: PublicConfig) {
   const sessionAuth = createSessionAuth({ loginPath: "/login" });
+  const privateQuery = createPrivateQuery(() => {
+    sessionAuth.handleAuthFailure({
+      code: "interaction-required",
+      reason: "login",
+      provider: config.provider,
+      scopes: [],
+    });
+  });
   function Home() {
     return (
       <main>
@@ -131,5 +139,5 @@ export function createExampleRegistry(config: PublicConfig) {
     },
     { auth: sessionAuth },
   );
-  return Object.freeze({ registry, sessionAuth });
+  return Object.freeze({ registry, sessionAuth, privateQuery });
 }

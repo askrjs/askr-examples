@@ -7,7 +7,7 @@ import { examplePublicConfig } from "../public-config.js";
 import { schema } from "@askrjs/schema";
 import { createExampleRegistry } from "../registry.js";
 import { readProviderAction } from "../actions.js";
-import { privateQuery, privateValue } from "../private-query.js";
+import { privateValue } from "../private-query.js";
 import { selectedProvider } from "./providers.js";
 import { createDisplayProfiles } from "./profile-store.js";
 import type { ProviderEnvironment } from "./environment.js";
@@ -27,7 +27,7 @@ export async function createExampleApp(
   const provider = await selectedProvider(env);
   const profiles = createDisplayProfiles(clock);
   const publicConfig = examplePublicConfig(env.provider, env.mode);
-  const { registry, sessionAuth } = createExampleRegistry(publicConfig);
+  const { registry, sessionAuth, privateQuery } = createExampleRegistry(publicConfig);
   const spaDocument: Middleware = async (context, next) => {
     if (
       env.mode === "spa" &&
