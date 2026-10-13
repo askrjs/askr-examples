@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "version": "0.5.0",
+  "packages": {
+    "@askrjs/askr": {
+      "version": "0.5.0",
+      "integrity": "sha512-VaMVh23Qj/pik7j1y57t0JzKpKhYq8zO+0UmVfzleDVNme73pI/C0iNOYtJuaYYaAV5+fsSCUpvX7TPgeCuYSA==",
+      "tarballSha256": "cbd1fa943c75cdf5781eb4d63f2cc74bae308afc9f13c9f447f58220843d7984",
+      "sourceCommit": "86da1b1b6bb03afcbc43531c3df0d05fb120ee3b"
+    },
+    "@askrjs/auth": {
+      "version": "0.5.0",
+      "integrity": "sha512-2quLsDz8mH/6eyKSdcKLJcJQFPcNU2P5H8lS56/IzMzPOt3eihO17e1W5DDnVNMYbNaGVc5FJwWj9Snz0++ygw==",
+      "tarballSha256": "804da85620e477eb97504e309dc7ac8525b25501fe915e5b81ad68b02bcbbb1e",
+      "sourceCommit": "e2c14a36628b6a27e62e6aa64d7186fd332ae0b3"
+    },
+    "@askrjs/schema": {
+      "version": "0.5.0",
+      "integrity": "sha512-JMciK1KmJJ7Jy/GY+ph3ibFf/75qFA1HXMuC0tI/QMxnqpVTbIY694AXk9KDODrY1qm8WaF9ktpjKlY7ciENgA==",
+      "tarballSha256": "8f0ec7ff67a22d8c670cff3fac7d77543a9d2bd7f882ec67694b7f7a01c97202",
+      "sourceCommit": "1db2180372325b8187c0d36c12142425972d0f4e"
+    },
+    "@askrjs/server": {
+      "version": "0.5.0",
+      "integrity": "sha512-piD546hjlQElDs+7fNbTCBE85qdnpZRnLmcOUAoalI1l7h6+Elpp0/+nkfVVim2BMnNs8CTqW01Cwpxv/hv9pA==",
+      "tarballSha256": "a35847ca7dadeae61fa77c48ab4bff8025d34b02f213617f1c8d18af879f50fd",
+      "sourceCommit": "583b438a86c16961c86c555836fe16bd8d736a52"
+    },
+    "@askrjs/logos": {
+      "version": "0.5.0",
+      "integrity": "sha512-Ko3Cf12+qwfoFx1QgDoEANPtFEILyGfSsA1/mwKD8AjTXH3n58cH0bXBv4s6FvfFH46FSIc9xzOr0eTC2YuLkw==",
+      "tarballSha256": "8d9d770c03e9abcbe8582aadcb6763e9084ffaab9ed5c88e74811794e21161e6",
+      "sourceCommit": "fbd1b359d7dfb3228fb8c8ee232e1d9bae12d8af"
+    },
+    "@askrjs/lucide": {
+      "version": "0.5.0",
+      "integrity": "sha512-naFre5an65bHCVYL9lSpdk/InU2PMbfigiY+b4oafNBQpcJWfEFKtZ0EayaVLlGoxDxlg2t4O23DParn8eKQgQ==",
+      "tarballSha256": "12507f68d30a8e066f242557c411ae7fc633f5b6d12b1488d0991934c2e6b8b0",
+      "sourceCommit": "af6e8b598c46e7c9ed46dcc0c2621e889650a576"
+    },
+    "@askrjs/fetch": {
+      "version": "0.5.0",
+      "integrity": "sha512-/eAjeP7x3xPfKaIaa0elg5mjNxx5ZJ51YZR1W5X2BhhVfiIXSxXRMBBa+6QIY9oNbsquzzP3BbJc6TIMlDyFgA==",
+      "tarballSha256": "a7b659e6d69421e93c42621bf5204e6e051fc264afdeb7ee3cd09f30f08ba3d5",
+      "sourceCommit": "2ead2cb26c7a4e9879ef20a82aff6c9bdf6e4e23"
+    },
+    "@askrjs/testing": {
+      "version": "0.5.0",
+      "integrity": "sha512-GR3kKzfmcExylK+jWfIc8fAHK6kqtUDfzP60uNM86HSk0Pc+FFZ+a/ZUULhmqIdv/cZdI29XUejEUQSMY8Ojqg==",
+      "tarballSha256": "0a6d419b604e143886f32a06ebcaf520a31a7bba96f0b7422393792c8970bf52",
+      "sourceCommit": "ac32742f7ae23d0f2c76d3f32056cf16e0b1d633"
+    },
+    "@askrjs/i18n": {
+      "version": "0.5.0",
+      "integrity": "sha512-DN6zf0Ok1zBLFGgm3EY35bITsOpA35qpGWvY7HNLAqw/qLjBn2ijvKEBalhc9+Fvmw72hwjgL/d2df+hWlJYKQ==",
+      "tarballSha256": "69905691f80f2e5027c64d2eb43d49141bcae29405715740b830fe2c5bccf686",
+      "sourceCommit": "f8a0f6a9b403bddf1560a5a79a1bcabc334351b7"
+    },
+    "@askrjs/orm": {
+      "version": "0.5.0",
+      "integrity": "sha512-4T1UfgCdXZN7EjVVUYmcu2wIyQ+rYpipDKJTsOx5yzxKdPcuDAjtAN8uWdgJpsukxHnb0C2aZl0dk+q6Fmu0/Q==",
+      "tarballSha256": "4790caf6e8dbcfa53e6959b4bb56a3f7810b2502a9f492eae16fcdbf458083fb",
+      "sourceCommit": "817e1e970a9921df53c8eb756fe1ad4e228a8f6b"
+    },
+    "@askrjs/otel": {
+      "version": "0.5.0",
+      "integrity": "sha512-sGKn5ny+SlClKG5GnC9fsyE00hAui4SeCm30f4kOHnVHW9CXvJdfggFAK7tG+FZlORtuJnHGjjPf+/59dihMtg==",
+      "tarballSha256": "f65530a47d83a3462e66dbc7f28eee7b833c62891e7941ab72092630a7927d5f",
+      "sourceCommit": "8097652fd804e5eb522a8afc8773ec7c1ff31b96"
+    },
+    "@askrjs/node": {
+      "version": "0.5.0",
+      "integrity": "sha512-HnsI+53V/JPWiEuPk954VTLhHHf+jK0in8Mvq2FKu+fBsaUhJENRiray8BC9LMex5Lvt+czX1XvAF/f4RdBpag==",
+      "tarballSha256": "d7a00f0a7037062a58126a0fb64b68fba78278b975039b3c23f915c82a0306bf",
+      "sourceCommit": "335a7c4d85c25a34e0d8a38198eeed01fb7bce52"
+    },
+    "@askrjs/vite": {
+      "version": "0.5.0",
+      "integrity": "sha512-7V7rS+oF8so2O0Kjr3CQUKtYUJIogP5taogHJTu9kqFrjfuBNpI9aMZkQcS1FwsQnJ9hHOVK1OE0JyDmZ6A92g==",
+      "tarballSha256": "5cba162e1b4895e98d8c18ecc815dbe59280fec919b665b9faf45667c2773008",
+      "sourceCommit": "408403aa5feeeea416c00bdc62d58ca343d5d5a9"
+    },
+    "@askrjs/ui": {
+      "version": "0.5.0",
+      "integrity": "sha512-Q3yvvcah8rp9iWEq7H0uQHU4to4uLx9lT5B8GpXz43qh2i9UVtxjrpJ5rdPWfNiIPCYEkqjDnhpT3JOlMnMOsg==",
+      "tarballSha256": "df948ddcee3d79a84fa0d6b70bbe884828ceb85849f679251ac3255330b04284",
+      "sourceCommit": "34ef542427c15dd388ae459181b0565cb27bd997"
+    },
+    "@askrjs/monaco": {
+      "version": "0.5.0",
+      "integrity": "sha512-oKAtmvvS5ZdB+V4B/Qt1v0781ftS1ZLPU2ErQNZdaVFSox7lXFax1iZYnA2yvuXlATPtax43fLaLwt0WmPiBBQ==",
+      "tarballSha256": "0749cbe4e5f46cbc4bf2f24349c2ac405166a9b89c456132905e3a3192685a76",
+      "sourceCommit": "b66806c6b49cd4a19f8ea7f47931f7f213a74845"
+    },
+    "@askrjs/charts": {
+      "version": "0.5.0",
+      "integrity": "sha512-/pwEk71WlxSGG8FZ71D71kLNDMPqA13eB5i8jxFMuzaY0o1D15nZybziJD5v1S9vlervOryH0AulCmI64Ulfwg==",
+      "tarballSha256": "1631cfd242f59cd831d4e086e771a394e01a7f49178072827f8a663a4ab5593a",
+      "sourceCommit": "7992395004b5e725a3870f4b57836a2bfb4630ef"
+    },
+    "@askrjs/themes": {
+      "version": "0.5.0",
+      "integrity": "sha512-qqR1q8cdl0w8ayXRh45WvEmCgk3WPAcOCeNcOGPm9ymCY7iO5aNjrwxz/hJ9fdrAB1vAGb3FQF5K/uddciZphw==",
+      "tarballSha256": "b154553c86b1242f251c6185dea3c55b8885eee796c772387258970b2191a8a8",
+      "sourceCommit": "c71d6686445630cc7b539a9f9ce3140c9c12535e"
+    },
+    "@askrjs/cli": {
+      "version": "0.5.0",
+      "integrity": "sha512-gn+I+ejpvQ3qI0QbQW4EEEzOawXEBL5+ww7vCx6PDLt0bGBfkufiZ2e5ZYj1+vr60KV0EcvHaRyDKtUB8JFNkg==",
+      "tarballSha256": "cd0b24b4c91b02067d15bf7e7666947254c5000109dcaf283fc39945b6a3b55d",
+      "sourceCommit": "9d363290883a183291e53a2cfe60339c391e658f"
+    }
+  }
+}
