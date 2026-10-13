@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vite-plus/test";
 import { createSPA } from "@askrjs/askr/boot";
 import { pageRegistry } from "../src/application/routes.js";
 

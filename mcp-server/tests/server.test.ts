@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { expect, it } from "vite-plus/test";
 import { mcp } from "../src/server.js";
 
 it("should expose the same definition to either transport", async () => {

@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vite-plus/test";
 import { createStaticGen } from "@askrjs/askr/ssg";
 import { withThemeStyles } from "@askrjs/themes/ssr";
 import { pageRegistry } from "../src/routes.js";

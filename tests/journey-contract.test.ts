@@ -1,5 +1,5 @@
 import { readFile, readdir } from "node:fs/promises";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { renderRouteRequestToString } from "@askrjs/askr/ssr";
 import { pageRegistry as spaRegistry } from "../spa/src/application/routes.js";
 import { pageRegistry as ssrRegistry } from "../ssr-only/src/application/routes.js";
@@ -134,5 +134,62 @@ describe("progressive example journey contract", () => {
       expect(source, file).toContain("fileURLToPath");
       expect(source, file).not.toMatch(/new URL\([^)]*dist[^)]*\)\.pathname/);
     }
+  });
+});
+
+describe("provider session application journey", () => {
+  it("declares a separately installable stage whose root build and strict gates include it", async () => {
+    const root = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+    const stage = JSON.parse(
+      await readFile(new URL("../provider-auth/package.json", import.meta.url), "utf8"),
+    );
+    expect(root.workspaces).toContain("provider-auth");
+    expect(stage.private).toBe(true);
+    for (const name of [
+      "@askrjs/askr",
+      "@askrjs/auth",
+      "@askrjs/node",
+      "@askrjs/schema",
+      "@askrjs/server",
+    ])
+      expect(stage.dependencies[name]).toBeTruthy();
+    expect(stage.devDependencies["@askrjs/vite"]).toBeTruthy();
+    expect(stage.devDependencies.vitest).toBeUndefined();
+    expect(stage.scripts.dev).toBe("npm run build && npm start");
+    expect(stage.scripts.build).toContain("vp build");
+    expect(root.scripts.acceptance).toContain("test:provider-types");
+    expect(root.scripts.acceptance).toContain("test:provider-browser");
+  });
+  it("keeps provider secrets and transport in server modules with public package imports", async () => {
+    const browser = [
+      "client.tsx",
+      "registry.tsx",
+      "public-config.ts",
+      "actions.ts",
+      "private-query.ts",
+    ];
+    for (const file of browser) {
+      const source = await readFile(
+        new URL(`../provider-auth/src/${file}`, import.meta.url),
+        "utf8",
+      );
+      expect(source, file).not.toMatch(
+        /process\.env|node:|@askrjs\/server|@askrjs\/auth\/providers|clientSecret|privateKeyPath/u,
+      );
+      expect(source, file).not.toMatch(/__askr_|@askrjs\/[^'"]+\/src/u);
+    }
+    const server = await readFile(
+      new URL("../provider-auth/src/server/app.ts", import.meta.url),
+      "utf8",
+    );
+    expect(server.match(/createAskrApp\(/gu)).toHaveLength(1);
+    expect(server).toContain("context.auth.token");
+    const entry = await readFile(
+      new URL("../provider-auth/src/server/production.ts", import.meta.url),
+      "utf8",
+    );
+    expect(entry).toContain('from "virtual:askr-server"');
+    expect(entry).toContain('from "./entry-server.js"');
+    expect(entry).toContain("withApplicationLifecycle");
   });
 });
