@@ -55,7 +55,7 @@ jobs:
         run: npm run test:runtime
 
       - name: Test
-        run: npm test && npm run typecheck && npm run test:journey && npm run openapi:check && npm run test:browser
+        run: npm run test:qualification && npm test && npm run typecheck && npm run test:journey && npm run openapi:check && npm run test:browser
 
       - name: Installed provider contracts
         run: npm run test:provider-installed && npm run test:provider-types

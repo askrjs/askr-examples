@@ -23,7 +23,8 @@
 - Declare SPA's own jsdom dependency and keep installed/generated files outside
   each stage's lint and format scope.
 - Preserve the API/SSR DOMPurify override for standalone installation.
-- Clear the SSG server root before boot after a hydration failure.
+- Mark the SSG root ready after hydration completes so runtime checks can prove
+  server-node reuse and exactly one interactive acknowledgment.
 - Run the provider application's signed Chromium, Firefox and WebKit journeys,
   installed public surface and both TypeScript compiler gates in ordinary CI.
 - Consume Vite's installed virtual-server declaration without duplicate local
@@ -38,3 +39,7 @@
   cookies, exact private-request cancellation and bounded cleanup.
 - Start Google sign-in with identity scopes, then request Calendar permission
   through the first server action's explicit consent flow.
+- Verify each candidate archive's served SHA-256 and SRI before independent
+  application installation, retaining an archive receipt and rejecting redirects.
+- Map the provider example's shared environment settings to `askr add auth`
+  output while preserving matching credential names and callback routes.

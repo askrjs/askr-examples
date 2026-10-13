@@ -52,7 +52,21 @@ Candidate mode rejects 0.4 declarations and requires all 18 reviewed packages in
 }
 ```
 
+Before installing any stage, the runner downloads all 18 archives from the loopback
+registry at their canonical npm tarball paths. Each archive must return HTTP 200
+without redirects and match both the inventory's SHA-256 and SHA-512 SRI. It writes
+the measured hashes, byte counts, canonical/served URLs and inventory producer
+commits to `candidate-archives.json`; the final stage receipt includes the same
+records. The coordinator must establish the source-commit-to-archive binding when
+producing the frozen inventory: hashing package bytes cannot derive a Git commit.
+
 The loopback registry must serve those exact archives while preserving canonical npm tarball URLs in generated locks. Every installed Askr package must match the frozen version and SRI; no `file:`/link dependencies, forced installs, optional-peer suppression, or extra application dependencies are introduced. An explicit `--npm-cli /absolute/npm/bin/npm-cli.js` selects a toolchain when invoking the helper directly; `npm run test:stages` uses its executing npm CLI.
+
+`npm run test:qualification` exercises the archive boundary with owned HTTP
+servers. Its runner regression supplies a valid SRI with a wrong SHA-256 and
+asserts rejection before npm installation. Additional cases cover all 18 package
+names, changed bytes, a wrong SRI, a missing archive and a rejected redirect.
+`npm run check` and ordinary CI include these tests.
 
 Full and production audits always query the public npm advisory database. The
 candidate registry serves archive and metadata GETs only, so audit POSTs must

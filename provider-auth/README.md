@@ -77,6 +77,31 @@ application `returnTo` may retain a safe path, query and fragment; it rejects
 scheme-relative, foreign-origin, raw/encoded backslash, control and traversal
 targets and falls back to `/account`.
 
+### CLI-generated starter settings
+
+For a supported CLI starter, `askr add auth google --origin https://app.example`
+prints the same `/auth/callback/google`, local POST `/auth/logout`, and `/`
+post-logout destination used here. Repeat `--origin` for each environment and
+register each exact callback in the provider console. The generator writes blank
+environment names and preserves server ownership of secrets.
+
+This explicitly assembled example names its shared application settings as follows:
+
+| CLI starter setting   | This example's setting                                       |
+| --------------------- | ------------------------------------------------------------ |
+| `APP_ORIGIN`          | `ASKR_ORIGIN`, the same exact HTTPS origin                   |
+| `AUTH_SESSION_SECRET` | `ASKR_SESSION_SECRETS`, initially containing that single key |
+
+The provider credential names in `.env.example` match the CLI generator for all
+four providers. `ASKR_PROVIDER` selects this example's provider, and its render
+mode, TLS paths, listen port and separate action CSRF secret remain explicit
+application settings. Set these values in the example's `.env.local`; the CLI's
+generated `.env.example` belongs to its starter. Both setups use confidential Web
+credentials even when rendering in SPA mode, and Apple's callback requires a
+registered HTTPS domain rather than `localhost`.
+
+### Provider registration and API consent
+
 | Selection   | Required provider settings                                                                                                   | Explicit server API operation                                                                                              |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `auth0`     | `AUTH0_DOMAIN` as a DNS hostname only (no scheme, path or port), client ID and secret; optional expected organization ID     | Optional: set audience, exact space-separated API scopes and HTTPS API URL together. No API target is guessed.             |

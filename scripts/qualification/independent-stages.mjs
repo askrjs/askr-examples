@@ -3,6 +3,7 @@ import { cp, lstat, mkdir, readFile, realpath, writeFile } from "node:fs/promise
 import { basename, dirname, join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { args, required, json, sha256, save, run, guard } from "./common.mjs";
+import { verifyCandidateArchives } from "./candidate-archives.mjs";
 
 const BASELINE_STAGES = ["spa", "ssr-only", "api-ssr", "api-only", "ssg", "mcp-server"];
 const ALL_STAGES = [...BASELINE_STAGES, "provider-auth"];
@@ -213,6 +214,8 @@ if (options.help) {
   }
   await mkdir(out, { recursive: false });
   await guard(out, "independent-stages.json", async () => {
+    const archives = baseline ? null : await verifyCandidateArchives(inventory, registry);
+    if (archives) await save(join(out, "candidate-archives.json"), { archives });
     const tool = join(out, "toolchain");
     await mkdir(join(tool, "bin"), { recursive: true });
     const quote = (value) => "'" + value.replaceAll("'", "'\"'\"'") + "'";
@@ -300,11 +303,7 @@ if (options.help) {
       // Candidate archives are GET-only; the public registry owns advisory POSTs.
       const advisoryRegistry = ["--registry", "https://registry.npmjs.org/"];
       await npm(replay, "audit", "audit-all", [...advisoryRegistry, "--json"]);
-      await npm(replay, "audit", "audit-production", [
-        ...advisoryRegistry,
-        "--omit=dev",
-        "--json",
-      ]);
+      await npm(replay, "audit", "audit-production", [...advisoryRegistry, "--omit=dev", "--json"]);
       const manifest = await json(join(replay, "package.json"));
       const gates = manifest.scripts.check
         ? ["check", "build"]
@@ -364,6 +363,7 @@ if (options.help) {
       inventory: baseline
         ? null
         : { path: inventoryPath, sha256: sha256(inventoryBytes), version: inventory.version },
+      archives,
       source,
       selected,
       preflight,
