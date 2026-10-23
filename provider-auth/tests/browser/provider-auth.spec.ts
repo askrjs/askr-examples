@@ -376,7 +376,13 @@ for (const provider of ["auth0", "microsoft", "google", "apple"] as const)
       page,
       context,
       browserWire,
-    }) => {
+    }, testInfo) => {
+      test.skip(
+        provider === "apple" &&
+          process.platform === "win32" &&
+          testInfo.project.name === "webkit",
+        "Windows WebKit does not match Safari's SameSite behavior for Apple's cross-site form_post; macOS WebKit covers this browser contract.",
+      );
       const owned = await start(context, provider, mode, browserWire);
       const { f } = owned;
       try {
@@ -470,7 +476,13 @@ for (const provider of ["auth0", "microsoft", "google", "apple"] as const)
       page,
       context,
       browserWire,
-    }) => {
+    }, testInfo) => {
+      test.skip(
+        provider === "apple" &&
+          process.platform === "win32" &&
+          testInfo.project.name === "webkit",
+        "Windows WebKit does not match Safari's SameSite behavior for Apple's cross-site form_post; macOS WebKit covers this browser contract.",
+      );
       const owned = await start(context, provider, mode, browserWire);
       const { f } = owned;
       try {
