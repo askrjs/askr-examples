@@ -1,5 +1,5 @@
 import { readFile, readdir } from "node:fs/promises";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { renderRouteRequestToString } from "@askrjs/askr/ssr";
 import { pageRegistry as spaRegistry } from "../spa/src/application/routes.js";
 import { pageRegistry as ssrRegistry } from "../ssr-only/src/application/routes.js";
