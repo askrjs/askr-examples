@@ -35,19 +35,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install browser engines
-        run: npx playwright install chromium firefox webkit
-
-      - name: Install WebKit runtime libraries
+      - name: Install Linux browser engines
         if: runner.os == 'Linux'
-        # Install only the WebKit libraries absent from the hosted Ubuntu image;
-        # Playwright's full apt dependency set takes longer than the runner job.
-        run: >-
-          sudo apt-get install --no-install-recommends -y
-          libavif16 libevent-2.1-7t64 libflite1 libgles2 libgraphene-1.0-0
-          libgstreamer-plugins-bad1.0-0 libgstreamer-plugins-base1.0-0
-          libgtk-4-1 libharfbuzz-icu0 libhyphen0 libmanette-0.2-0 libopus0
-          libsecret-1-0 libwayland-server0 libx264-164
+        run: npx playwright install chromium firefox
+
+      - name: Install browser engines
+        if: runner.os != 'Linux'
+        run: npx playwright install chromium firefox webkit
 
       - name: Format check
         run: npm run fmt --workspaces --if-present -- --check
@@ -72,4 +66,9 @@ jobs:
         run: npm run test:provider-installed && npm run test:provider-types
 
       - name: Signed provider browser journeys
+        if: runner.os == 'Linux'
+        run: npm run test:browser --workspace @askrjs/example-provider-auth -- --project=chromium --project=firefox
+
+      - name: Signed provider browser journeys
+        if: runner.os != 'Linux'
         run: npm run test:provider-browser

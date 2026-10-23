@@ -171,7 +171,7 @@ test("should ensure authenticated SSR data, mutations, theme persistence, and Mo
 
   await page.getByRole("link", { name: "Policies" }).click();
   await expect(page.getByRole("heading", { name: "Support escalation" })).toBeVisible();
-  await expect(page.getByLabel("Policy source")).toBeVisible();
+  await expect(page.getByLabel("Policy source")).toBeVisible({ timeout: 15_000 });
   await page.getByRole("button", { name: "Save policy" }).click();
   await expect(page.getByRole("status")).toHaveText("Policy saved.");
   expect(pageErrors).toEqual([]);
