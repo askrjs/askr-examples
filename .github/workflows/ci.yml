@@ -36,7 +36,10 @@ jobs:
         run: npm ci
 
       - name: Install browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
+        # GitHub's Ubuntu runner image already includes the browser system
+        # libraries. Avoid Playwright's apt pass here: the mirror is slow enough
+        # to consume the whole job timeout before any tests start.
+        run: npx playwright install chromium firefox webkit
 
       - name: Format check
         run: npm run fmt --workspaces --if-present -- --check
