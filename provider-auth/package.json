@@ -33,7 +33,7 @@
     "@types/node": "^26.3.0",
     "typescript": "^7.0.2",
     "typescript6": "npm:typescript@6.0.3",
-    "vite": "^8.3.5",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
     "vite-plus": "1.4.0"
   },
   "engines": {
