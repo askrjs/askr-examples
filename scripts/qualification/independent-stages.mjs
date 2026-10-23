@@ -280,6 +280,7 @@ if (options.help) {
       ]);
       const clean = await verifyInstall(replay, inventory, baseline);
       assert.equal(clean.lockSha256, initial.lockSha256, "ci must replay the exact generated lock");
+      const stageManifest = await json(join(replay, "package.json"));
       const peerTree = await npm(replay, "ls", "normal-peer-tree", ["--all", "--json"], {
         allowedExitCodes: [0, 1],
       });
@@ -287,16 +288,30 @@ if (options.help) {
       let developmentPeerLimitation = null;
       if (peerTree.code !== 0) {
         assert.equal(peers.error?.code, "ELSPROBLEMS");
-        assert.ok(peers.problems?.length > 0);
-        for (const problem of peers.problems) {
-          assert.match(problem, /^invalid: vite@npm:@voidzero-dev\/vite-plus-core@0\.3\.3 /);
-        }
+        assert.equal(peers.problems?.length, 1);
+        const vitePlus = await json(join(replay, "node_modules/vite-plus/package.json"));
+        const viteDeclaration =
+          stageManifest.devDependencies?.vite ?? vitePlus.dependencies?.vite;
+        const viteAlias = /^npm:@voidzero-dev\/vite-plus-core@(.+)$/.exec(viteDeclaration ?? "");
+        assert.ok(viteAlias, `expected the supported Vite+ core alias, got ${viteDeclaration}`);
+        assert.ok(
+          peers.problems[0].startsWith(
+            `invalid: vite@npm:@voidzero-dev/vite-plus-core@${viteAlias[1]} `,
+          ),
+          `unexpected peer-tree issue: ${peers.problems[0]}`,
+        );
+        const installedVite = await json(join(replay, "node_modules/vite/package.json"));
+        assert.equal(installedVite.name, "@voidzero-dev/vite-plus-core");
+        assert.equal(installedVite.version, viteAlias[1]);
+        const vitest = await json(join(replay, "node_modules/vitest/package.json"));
+        assert.equal(vitest.version, vitePlus.dependencies.vitest);
+        assert.match(vitest.peerDependencies.vite, /^\^6\.4\.0 \|\| \^7\.0\.0 \|\| \^8\.0\.0$/);
         const mocker = await json(join(replay, "node_modules/@vitest/mocker/package.json"));
-        assert.equal(mocker.version, "4.1.11");
+        assert.equal(mocker.version, vitest.version);
         assert.equal(mocker.peerDependencies.vite, "^6.0.0 || ^7.0.0 || ^8.0.0");
         developmentPeerLimitation = {
           reason:
-            "Upstream Vitest mocker peer metadata excludes the supported Vite+ alias; ordinary npm install/ci and app gates are qualified separately.",
+            "Upstream Vitest and mocker peer ranges exclude the supported Vite+ core alias; normal install, npm ci replay, and stage gates are qualified separately.",
           problems: peers.problems,
         };
       }
@@ -304,8 +319,7 @@ if (options.help) {
       const advisoryRegistry = ["--registry", "https://registry.npmjs.org/"];
       await npm(replay, "audit", "audit-all", [...advisoryRegistry, "--json"]);
       await npm(replay, "audit", "audit-production", [...advisoryRegistry, "--omit=dev", "--json"]);
-      const manifest = await json(join(replay, "package.json"));
-      const gates = manifest.scripts.check
+      const gates = stageManifest.scripts.check
         ? ["check", "build"]
         : ["lint", "typecheck", "test", "build"];
       if (stage === "provider-auth") gates.push("test:types6", "test:types7", "test:browser");
