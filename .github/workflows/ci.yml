@@ -36,10 +36,18 @@ jobs:
         run: npm ci
 
       - name: Install browser engines
-        # GitHub's Ubuntu runner image already includes the browser system
-        # libraries. Avoid Playwright's apt pass here: the mirror is slow enough
-        # to consume the whole job timeout before any tests start.
         run: npx playwright install chromium firefox webkit
+
+      - name: Install WebKit runtime libraries
+        if: runner.os == 'Linux'
+        # Install only the WebKit libraries absent from the hosted Ubuntu image;
+        # Playwright's full apt dependency set takes longer than the runner job.
+        run: >-
+          sudo apt-get install --no-install-recommends -y
+          libavif16 libevent-2.1-7t64 libflite1 libgles2 libgraphene-1.0-0
+          libgstreamer-plugins-bad1.0-0 libgstreamer-plugins-base1.0-0
+          libgtk-4-1 libharfbuzz-icu0 libhyphen0 libmanette-0.2-0 libopus0
+          libsecret-1-0 libwayland-server0 libx264-164
 
       - name: Format check
         run: npm run fmt --workspaces --if-present -- --check
