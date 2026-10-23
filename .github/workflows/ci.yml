@@ -35,8 +35,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Linux browser engines
+        if: runner.os == 'Linux'
+        run: npx playwright install chromium firefox
+
       - name: Install browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
+        if: runner.os != 'Linux'
+        run: npx playwright install chromium firefox webkit
 
       - name: Format check
         run: npm run fmt --workspaces --if-present -- --check
@@ -61,4 +66,9 @@ jobs:
         run: npm run test:provider-installed && npm run test:provider-types
 
       - name: Signed provider browser journeys
+        if: runner.os == 'Linux'
+        run: npm run test:browser --workspace @askrjs/example-provider-auth -- --project=chromium --project=firefox
+
+      - name: Signed provider browser journeys
+        if: runner.os != 'Linux'
         run: npm run test:provider-browser
