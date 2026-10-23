@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { createApp } from "../src/app.js";
 import { createDependencies } from "../src/boot/dependencies.js";
 import api from "../src/api.js";

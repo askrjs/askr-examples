@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import {
   createDataRuntime,
   createMutation,
@@ -74,6 +74,65 @@ describe("API and SSR culmination", () => {
 
     const after = await app.fetch(withCookie("/api/session", cookie));
     expect(await after.json()).toMatchObject({ authenticated: false });
+  });
+
+  it.each([
+    ["protocol-relative URLs", "//attacker.example"],
+    ["backslash URL forms", "/\\\\attacker.example"],
+    ["dot-segment traversal", "/workspace/../login"],
+  ])("should fall back to the workspace for %s in native login redirects", async (_name, next) => {
+    const app = createApp(createDependencies());
+    const response = await app.fetch(
+      new Request(`http://example.test/api/session?next=${encodeURIComponent(next)}`, {
+        method: "POST",
+        headers: { accept: "text/html" },
+      }),
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("/workspace");
+  });
+
+  it("should preserve same-origin login redirect query and fragment values", async () => {
+    const app = createApp(createDependencies());
+    const next = "/workspace/users/1?tab=recent#activity";
+    const response = await app.fetch(
+      new Request(`http://example.test/api/session?next=${encodeURIComponent(next)}`, {
+        method: "POST",
+        headers: { accept: "text/html" },
+      }),
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe(next);
+  });
+
+  it("should preserve traversal-like text inside native redirect query values", async () => {
+    const app = createApp(createDependencies());
+    const next = "/workspace?path=/../reports#activity";
+    const response = await app.fetch(
+      new Request(`http://example.test/api/session?next=${encodeURIComponent(next)}`, {
+        method: "POST",
+        headers: { accept: "text/html" },
+      }),
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe(next);
+  });
+
+  it("should preserve encoded backslashes inside native redirect query values", async () => {
+    const app = createApp(createDependencies());
+    const next = "/workspace?token=a%5Cb#activity";
+    const response = await app.fetch(
+      new Request(`http://example.test/api/session?next=${encodeURIComponent(next)}`, {
+        method: "POST",
+        headers: { accept: "text/html" },
+      }),
+    );
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe(next);
   });
 
   it("should SSR prefetch dashboard data into hydration state without a loading branch", async () => {
