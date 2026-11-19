@@ -23,10 +23,10 @@
   },
   "devDependencies": {
     "@askrjs/cli": ">=0.5.0 <0.6.0",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0",
-    "vite-plus": "1.4.0"
+    "vite": "npm:@voidzero-dev/vite-plus-core@8.3.8000",
+    "vite-plus": "1.7.0"
   },
   "engines": {
     "node": ">=24.0.0"
