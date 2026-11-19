@@ -184,7 +184,7 @@ describe("real signed provider application transport", () => {
     const second = await fixture("google", "ssr", first.origin);
     expect(second.origin).toBe(first.origin);
     expect(second.env.sessionSecrets).toEqual(first.env.sessionSecrets);
-    expect(second.env.listenPort).not.toBe(first.env.listenPort);
+    expect(second.appPort).not.toBe(first.appPort);
     const signed = await first.login();
     expect(
       (await (await first.request("/auth/session", { headers: { cookie: signed.cookie } })).json())
