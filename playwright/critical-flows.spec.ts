@@ -134,7 +134,7 @@ test("should ensure authenticated SSR data, mutations, theme persistence, and Mo
   );
   await page.getByRole("button", { name: "Save user" }).click();
   expect((await actionResponse).status()).toBe(200);
-  await expect(page.getByRole("status")).toHaveText("User saved.");
+  await expect(page.getByRole("status").filter({ hasText: "User saved." })).toHaveText("User saved.");
   await page.getByRole("button", { name: "Cancel" }).click();
   await page.getByRole("link", { name: "Users" }).click();
   await expect(page.getByText("Ada Byron")).toBeVisible();
@@ -173,6 +173,6 @@ test("should ensure authenticated SSR data, mutations, theme persistence, and Mo
   await expect(page.getByRole("heading", { name: "Support escalation" })).toBeVisible();
   await expect(page.getByLabel("Policy source")).toBeVisible({ timeout: 15_000 });
   await page.getByRole("button", { name: "Save policy" }).click();
-  await expect(page.getByRole("status")).toHaveText("Policy saved.");
+  await expect(page.getByRole("status").filter({ hasText: "Policy saved." })).toHaveText("Policy saved.");
   expect(pageErrors).toEqual([]);
 });
