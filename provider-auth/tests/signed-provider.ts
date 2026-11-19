@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { generateKeyPairSync, createHash, sign, verify } from "node:crypto";
 import { request as httpsRequest, createServer as createHttpsServer } from "node:https";
-import { createServer } from "node:net";
 import { mkdtemp, readFile, writeFile, mkdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -51,20 +50,6 @@ export async function bounded<T>(operation: Promise<T>, label: string, ms = 2500
   } finally {
     if (timer) clearTimeout(timer);
   }
-}
-async function port() {
-  const server = createServer();
-  await new Promise<void>((resolve, reject) => {
-    server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolve);
-  });
-  const address = server.address();
-  assert.ok(address && typeof address === "object");
-  const value = address.port;
-  await new Promise<void>((resolve, reject) =>
-    server.close((error) => (error ? reject(error) : resolve())),
-  );
-  return value;
 }
 function cookieHeaders(lines: readonly string[]) {
   return lines.map((line) => line.split(";")[0]).join("; ");
@@ -168,8 +153,7 @@ export async function signedProviderFixture(
     }
     await writeFile(applePath, apple.privateKey.export({ format: "pem", type: "pkcs8" }));
     const ca = await readFile(caPath);
-    const appPort = await port();
-    const origin = publicOrigin ?? `https://app.example.test:${appPort}`;
+    const origin = publicOrigin ?? "https://app.example.test:3443";
     const issuer =
       provider === "auth0"
         ? "https://tenant.example.test/"
@@ -545,7 +529,7 @@ export async function signedProviderFixture(
     const base = {
       mode,
       origin,
-      listenPort: appPort,
+      listenPort: 0,
       sessionSecrets: [Buffer.alloc(32, 9).toString("base64url")],
       actionCsrfSecret: "OWNED_ACTION_CSRF_SECRET",
       tls: { certPath: caPath, keyPath },
@@ -686,6 +670,9 @@ export async function signedProviderFixture(
         throw new AggregateError([error, ...cleanupFailures], "Fixture startup failed");
       throw error;
     }
+    const applicationAddress = serving.server.address();
+    assert.ok(applicationAddress && typeof applicationAddress === "object");
+    const appPort = applicationAddress.port;
     let closed: Promise<void> | undefined;
     return {
       provider,
@@ -696,6 +683,7 @@ export async function signedProviderFixture(
       callbackRequests,
       failures,
       unknownTraffic,
+      appPort,
       browserDestinations: new Map([
         [`${new URL(origin).hostname}:${new URL(origin).port || "443"}`, appPort],
         ...[...(browserAuthorizationOrigin ? [browserAuthorize] : allowed)].map(
