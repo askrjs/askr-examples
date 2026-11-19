@@ -35,7 +35,7 @@
     "test:provider-installed": "npm run test:installed --workspace @askrjs/example-provider-auth"
   },
   "devDependencies": {
-    "@askrjs/askr": ">=0.5.0 <0.6.0",
+    "@askrjs/askr": ">=0.5.1 <0.6.0",
     "@askrjs/schema": ">=0.5.0 <0.6.0",
     "@playwright/test": "^1.65.1",
     "@types/node": "^26.6.6",

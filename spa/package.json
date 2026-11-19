@@ -13,10 +13,10 @@
     "typecheck": "tsc --noEmit --pretty false"
   },
   "dependencies": {
-    "@askrjs/askr": ">=0.5.0 <0.6.0",
-    "@askrjs/auth": ">=0.5.0 <0.6.0",
-    "@askrjs/lucide": ">=0.5.0 <0.6.0",
-    "@askrjs/themes": ">=0.5.0 <0.6.0",
+    "@askrjs/askr": ">=0.5.1 <0.6.0",
+    "@askrjs/auth": ">=0.5.1 <0.6.0",
+    "@askrjs/lucide": ">=0.5.1 <0.6.0",
+    "@askrjs/themes": ">=0.5.1 <0.6.0",
     "@askrjs/ui": ">=0.5.0 <0.6.0"
   },
   "devDependencies": {

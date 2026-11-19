@@ -17,13 +17,13 @@
     "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
-    "@askrjs/askr": ">=0.5.0 <0.6.0",
-    "@askrjs/lucide": ">=0.5.0 <0.6.0",
-    "@askrjs/themes": ">=0.5.0 <0.6.0",
+    "@askrjs/askr": ">=0.5.1 <0.6.0",
+    "@askrjs/lucide": ">=0.5.1 <0.6.0",
+    "@askrjs/themes": ">=0.5.1 <0.6.0",
     "@askrjs/ui": ">=0.5.0 <0.6.0"
   },
   "devDependencies": {
-    "@askrjs/cli": ">=0.5.0 <0.6.0",
+    "@askrjs/cli": ">=0.5.1 <0.6.0",
     "@askrjs/vite": ">=0.5.0 <0.6.0",
     "typescript": "^7.0.2",
     "vite": "npm:@voidzero-dev/vite-plus-core@8.3.8000",
