@@ -38,19 +38,19 @@
     "@askrjs/askr": ">=0.5.1 <0.6.0",
     "@askrjs/schema": ">=0.5.0 <0.6.0",
     "@playwright/test": "^1.65.1",
-    "@types/node": "^26.6.6",
+    "@types/node": "^26.6.10",
     "@typescript/native": "npm:typescript@^7.0.2",
     "jsdom": "^31.0.1",
-    "monaco-editor": "^0.57.0",
+    "monaco-editor": "^0.58.0",
     "playwright": "^1.65.1",
     "tsx": "^4.23.15",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "vite-plus": "1.7.0",
-    "vitest": "5.1.0"
+    "vite-plus": "1.8.0",
+    "vitest": "5.1.2"
   },
   "overrides": {
     "dompurify": "3.4.18",
-    "vitest": "5.1.0"
+    "vitest": "5.1.2"
   },
   "engines": {
     "node": ">=24.0.0"
