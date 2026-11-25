@@ -30,15 +30,15 @@
     "@askrjs/themes": ">=0.5.1 <0.6.0",
     "@askrjs/ui": ">=0.5.0 <0.6.0",
     "@opentelemetry/api": "^1.10.0",
-    "monaco-editor": "^0.57.0"
+    "monaco-editor": "^0.58.0"
   },
   "devDependencies": {
     "@askrjs/cli": ">=0.5.1 <0.6.0",
     "@askrjs/vite": ">=0.5.0 <0.6.0",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
-    "vite": "npm:@voidzero-dev/vite-plus-core@8.3.8000",
-    "vite-plus": "1.7.0"
+    "vite": "npm:@voidzero-dev/vite-plus-core@8.3.8001",
+    "vite-plus": "1.8.0"
   },
   "overrides": {
     "dompurify": "3.4.18"
