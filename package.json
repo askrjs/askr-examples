@@ -46,11 +46,11 @@
     "tsx": "^4.23.15",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vite-plus": "1.8.0",
-    "vitest": "5.1.2"
+    "vitest": "5.1.1"
   },
   "overrides": {
     "dompurify": "3.4.18",
-    "vitest": "5.1.2"
+    "vitest": "5.1.1"
   },
   "engines": {
     "node": ">=24.0.0"
